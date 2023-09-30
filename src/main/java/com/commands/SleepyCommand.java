@@ -1,4 +1,4 @@
-package org.example;
+package com.commands;
 
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.philippheuer.events4j.simple.domain.EventSubscriber;

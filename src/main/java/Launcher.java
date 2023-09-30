@@ -1,6 +1,5 @@
-package org.example;
-
 import com.auth.Authenticator;
+import com.commands.SleepyCommand;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;

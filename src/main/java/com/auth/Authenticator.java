@@ -7,6 +7,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 
+/**
+ * An authentication class to handle authentication between Twitch and the bot. Although this class generates a URI,
+ * this class does not actually use the URI. The class needs clientID, a list of scopes, and the user's access token
+ * (found by visiting the authURI).
+ */
 public class Authenticator {
     private final OAuth2Credential credential;
     private URI authURI;
@@ -32,6 +37,7 @@ public class Authenticator {
 
     /**
      * Accessor for authURI.
+     * todo: find a way to integrate this so it is conveniently shown to the user when they don't have a valid token
      * @return authURI
      */
     public URI getAuthURI() {
