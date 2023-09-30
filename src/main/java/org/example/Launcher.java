@@ -1,17 +1,18 @@
 package org.example;
 
+import com.auth.Authenticator;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 
+import java.io.IOException;
+
 public class Launcher {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // Initialize an authenticator to receive credentials.
         Authenticator authenticator = new Authenticator();
         OAuth2Credential credential = authenticator.getCredential();
-
-
 
         // Build the twitchClient.
         TwitchClient twitchClient = TwitchClientBuilder.builder()
