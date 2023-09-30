@@ -8,6 +8,9 @@ import com.github.twitch4j.TwitchClientBuilder;
 
 import java.io.IOException;
 
+/**
+ * The "main" class for SharieBot. This class launches the bot, authenticates with Twitch, and joins the chat.
+ */
 public class Launcher {
     public static void main(String[] args) throws IOException {
         // Initialize an authenticator to receive credentials.
@@ -23,13 +26,12 @@ public class Launcher {
                 .withEnableHelix(true)
                 .build();
 
-        SimpleEventHandler eventHandler = twitchClient.getEventManager().getEventHandler(SimpleEventHandler.class);
-        ChannelMessageEventManager channelMessageEventManager = new ChannelMessageEventManager(eventHandler, twitchClient);
-
         twitchClient.getChat().joinChannel("shariemakesart");
 
+        // Initializes the eventHandler that will be used for all commands.
+        SimpleEventHandler eventHandler = twitchClient.getEventManager().getEventHandler(SimpleEventHandler.class);
 
-        twitchClient.getChat().sendMessage("shariemakesart", "Initial message.");
-
+        // All active commands:
+        new SleepyCommand(eventHandler, twitchClient);
     }
 }
