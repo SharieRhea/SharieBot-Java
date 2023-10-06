@@ -19,8 +19,7 @@ public class SleepyCommand extends Command{
      * @param client The twitchClient for the current session.
      */
     public SleepyCommand(SimpleEventHandler eventHandler, TwitchClient client) {
-        twitchClient = client;
-        eventHandler.onEvent(ChannelMessageEvent.class, this::parseCommand);
+        super(eventHandler, client);
     }
 
     /**
@@ -38,7 +37,7 @@ public class SleepyCommand extends Command{
      */
     @EventSubscriber
     protected void command(ChannelMessageEvent event) {
-        twitchClient.getChat().sendMessage(CHANNEL_NAME, "@" + event.getUser().getName() + " is " + generateRandomValue() + "% sleepy!");
+        sendMessage("@" + event.getUser().getName() + " is " + generateRandomValue() + "% sleepy!");
     }
 
     /**

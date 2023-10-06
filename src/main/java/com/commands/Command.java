@@ -1,5 +1,6 @@
 package com.commands;
 
+import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.philippheuer.events4j.simple.domain.EventSubscriber;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
@@ -16,6 +17,16 @@ public abstract class Command {
     final String CHANNEL_NAME = "shariemakesart";
 
     /**
+     * Base constructor for all Commands.
+     * @param eventHandler The main eventHandler that listens for events.
+     * @param client The active and connected TwitchClient.
+     */
+    protected Command(SimpleEventHandler eventHandler, TwitchClient client) {
+        twitchClient = client;
+        eventHandler.onEvent(ChannelMessageEvent.class, this::parseCommand);
+    }
+
+    /**
      * The method where each message is "parsed" to see if the applicable command is present.
      * @param event The channel message event being checked.
      */
@@ -27,4 +38,8 @@ public abstract class Command {
      */
     @EventSubscriber
     protected abstract void command(ChannelMessageEvent event);
+
+    protected void sendMessage(String message) {
+        twitchClient.getChat().sendMessage(CHANNEL_NAME, message);
+    }
 }
