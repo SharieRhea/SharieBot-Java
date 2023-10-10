@@ -1,4 +1,4 @@
-package com.commands;
+package sharierhea.commands;
 
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
@@ -24,7 +24,7 @@ public class ShinyCommand extends Command {
      * @param eventHandler The handler for all the commands.
      * @param client The twitchClient for the current session.
      */
-    public ShinyCommand(SimpleEventHandler eventHandler, TwitchClient client) throws FileNotFoundException {
+    public ShinyCommand(SimpleEventHandler eventHandler, TwitchClient client) throws {
         super(eventHandler, client);
         generator = new Random();
 

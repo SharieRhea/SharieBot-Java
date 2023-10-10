@@ -1,8 +1,5 @@
-import com.auth.Authenticator;
-import com.commands.SharieCommand;
-import com.commands.ShinyCommand;
-import com.commands.SleepyCommand;
-import com.commands.ThemeCommand;
+import sharierhea.auth.Authenticator;
+import sharierhea.commands.*;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
@@ -38,5 +35,7 @@ public class Launcher {
         new SharieCommand(eventHandler, twitchClient);
         new ThemeCommand(eventHandler, twitchClient);
         new ShinyCommand(eventHandler, twitchClient);
+        new SchoolCommand(eventHandler, twitchClient);
+        new WhyCommand(eventHandler, twitchClient);
     }
 }
