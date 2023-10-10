@@ -1,4 +1,4 @@
-package com.commands;
+package sharierhea.commands;
 
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.philippheuer.events4j.simple.domain.EventSubscriber;

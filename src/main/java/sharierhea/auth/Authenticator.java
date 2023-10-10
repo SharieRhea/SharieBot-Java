@@ -1,4 +1,4 @@
-package com.auth;
+package sharierhea.auth;
 
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 
@@ -22,7 +22,7 @@ public class Authenticator {
      * @throws IOException Some IO error.
      */
     public Authenticator() throws IOException {
-        try (BufferedReader reader = new BufferedReader(new FileReader("src/main/java/com/auth/accessToken.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("src/main/java/sharierhea/auth/accessToken.txt"))) {
             credential = new OAuth2Credential("twitch", reader.readLine());
         }
     }
@@ -50,7 +50,7 @@ public class Authenticator {
      * idea: create some interface to autogenerate scopes?
      */
     private void buildAuthURI() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("src/main/java/com/auth/uriInfo.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("src/main/java/sharierhea/auth/uriInfo.txt"))) {
             String builder = "https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=" +
                     // Append the user's clientID
                     reader.readLine() +
