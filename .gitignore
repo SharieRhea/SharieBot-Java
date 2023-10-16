@@ -41,3 +41,8 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+**/users/
+*.xml
+.gitignore
+/.idea/

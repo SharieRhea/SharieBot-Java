@@ -4,6 +4,8 @@ import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.philippheuer.events4j.simple.domain.EventSubscriber;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An abstract base class for a Command. Ensures that at the bare minimum, there is a method to check for
@@ -15,6 +17,7 @@ public abstract class Command {
     // todo: move channel name into a text file for re-usability
     // note: check to see if channel name has been hardcoded anywhere else
     final String CHANNEL_NAME = "shariemakesart";
+    Logger logger = LoggerFactory.getLogger(Command.class);
 
     /**
      * Base constructor for all Commands.

@@ -4,7 +4,7 @@ import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Random;
@@ -18,6 +18,8 @@ public class ShinyCommand extends Command {
     String[] epicItems;
     String[] legendaryItems;
     String[] mythicItems;
+    FileWriter writer;
+
     /**
      * Constructor to initialize the command, sets up onEvent behavior.
      * @param eventHandler The handler for all the commands.
@@ -66,17 +68,27 @@ public class ShinyCommand extends Command {
      */
     @Override
     protected void parseCommand(ChannelMessageEvent event) {
-        if (event.getMessage().contains("!shiny"))
+        if (event.getMessage().contains("!shiny")) {
+            File file = new File("src/resources/users/" + event.getUser().getName());
+            try {
+                file.createNewFile();
+                writer = new FileWriter(file, true);
+
+            }
+            catch (IOException ioException) {
+                logger.error(ioException.getMessage());
+            }
             command(event);
+        }
     }
 
     /**
-     * Sends a message in the format: "@user found a [object]!
+     * Sends a message in the format: "@user found a [object]!"
      * @param event The channel message event that triggered the command.
      */
     @Override
     protected void command(ChannelMessageEvent event) {
-        sendMessage("@" + event.getUser().getName() + " found a " + getItemRarity() + "!");
+        sendMessage("@" + event.getUser().getName() + " found a " + getRarityAndItem() + "!");
     }
 
     /**
@@ -84,18 +96,33 @@ public class ShinyCommand extends Command {
      * appropriate getRarityItem() method.
      * @return String of the item.
      */
-    private String getItemRarity() {
+    private String getRarityAndItem() {
         int number = generator.nextInt(100);
-        if (number < 50)
-            return getItem(commonItems);
-        else if (number < 75)
-            return getItem(rareItems);
-        else if (number < 90)
-            return getItem(epicItems);
-        else if (number < 97)
-            return getItem(legendaryItems);
-        else
-            return getItem(mythicItems);
+        String item;
+        String rarity;
+
+        if (number < 50) {
+            item = getItem(commonItems);
+            rarity = " (common)";
+        }
+        else if (number < 75) {
+            item = getItem(rareItems);
+            rarity = " (rare)";
+        }
+        else if (number < 90) {
+            item = getItem(epicItems);
+            rarity = " (epic)";
+        }
+        else if (number < 97) {
+            item = getItem(legendaryItems);
+            rarity = " (legendary)";
+        }
+        else {
+            item = getItem(mythicItems);
+            rarity = " (mythic)";
+        }
+        addToInventory(item);
+        return item + rarity;
     }
 
     /**
@@ -107,12 +134,30 @@ public class ShinyCommand extends Command {
         return array[generator.nextInt(array.length)];
     }
 
-
-    /*
-        - categories of rarity
-          - common, rare, epic, legendary, mythic
-          - 50%, 25%, 15%, 7%, 3%
-        - categories of things? NullPointerException
-        -
+    /**
+     * Adds the specified item to the user's "inventory", which is
+     * a text file.
+     * @param item The item to add.
      */
+    private void addToInventory(String item) {
+        try {
+            writer.append(item).append("\n");
+            writer.flush();
+        }
+        catch (IOException ioException) {
+            logger.error(ioException.getMessage());
+        }
+    }
 }
+
+/*
+    Current thoughts:
+     - text files suck, replace with a lightweight database?
+        - sqlite, maybe H2
+     - deployment (maybe at some point in the future?)
+        - AWS
+        - render
+     - make item a class?
+     - use hashmap to keep track of repeated items?
+     - how to integrate with !inventory?
+ */
