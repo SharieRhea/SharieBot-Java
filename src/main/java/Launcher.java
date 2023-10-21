@@ -1,3 +1,4 @@
+import sharierhea.Store;
 import sharierhea.auth.Authenticator;
 import sharierhea.commands.*;
 import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
@@ -25,6 +26,7 @@ public class Launcher {
                 .withEnableHelix(true)
                 .build();
 
+        Store store = new Store();
         twitchClient.getChat().joinChannel("shariemakesart");
 
         // Initializes the eventHandler that will be used for all commands.
@@ -37,5 +39,6 @@ public class Launcher {
         new ShinyCommand(eventHandler, twitchClient);
         new SchoolCommand(eventHandler, twitchClient);
         new WhyCommand(eventHandler, twitchClient);
+        new QuoteCommand(eventHandler, twitchClient, store);
     }
 }
