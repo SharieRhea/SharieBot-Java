@@ -8,7 +8,7 @@ import sharierhea.Store;
 import java.sql.SQLException;
 
 public class QuoteCommand extends Command {
-    Store store;
+    private Store store;
 
     /**
      * Constructor to initialize the command, sets up onEvent behavior.
@@ -21,12 +21,34 @@ public class QuoteCommand extends Command {
     }
 
     /**
-     * Triggers command behavior for any message containing !quote
+     * Triggers command behavior for any message containing !quote. Checks to see
+     * if there is an integer argument provided for quote number.
      * @param event The channel message event being checked.
      */
     public void parseCommand(ChannelMessageEvent event) {
-        if (event.getMessage().contains("!quote"))
+        if (!event.getMessage().contains("!quote"))
+            return;
+
+        String[] words = event.getMessage().split(" ");
+        if (words.length < 2) {
             command(event);
+            return;
+        }
+
+        int quoteNumber = 0;
+        for (int i = 0; i < words.length; i ++) {
+            // if !quote is found and there is another word after it
+            if (words[i].equals("!quote") && i + 1 < words.length) {
+                try {
+                    quoteNumber = Integer.parseInt(words[i + 1]);
+                    command(event, quoteNumber);
+                    return;
+                }
+                catch (NumberFormatException ignored) {
+                }
+            }
+        }
+        command(event);
     }
 
     /**
@@ -36,7 +58,25 @@ public class QuoteCommand extends Command {
     public void command(ChannelMessageEvent event) {
         try {
             Store.Quote quote = store.queryRandomQuote();
-            sendMessage("Quote " + quote.id() + ": " + quote.text() + " [" + quote.date() + "]");
+            sendMessage("Quote " + quote.id() + ": \"" + quote.text() + "\" [" + quote.date() + "]");
+        }
+        catch (SQLException exception) {
+            logger.error("Query failed" + exception);
+            sendMessage("Quote not found!");
+        }
+    }
+
+    /**
+     * Sends a message with the quote based on the given number.
+     * @param event The channel message event that triggered the command.
+     */
+    public void command(ChannelMessageEvent event, int quoteNumber) {
+        try {
+            Store.Quote quote = store.queryQuote(quoteNumber);
+            if (quote.id() == null)
+                sendMessage("Quote not found!");
+            else
+                sendMessage("Quote " + quote.id() + ": \"" + quote.text() + "\" [" + quote.date() + "]");
         }
         catch (SQLException exception) {
             logger.error("Query failed" + exception);

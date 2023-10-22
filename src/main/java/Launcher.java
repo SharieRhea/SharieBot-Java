@@ -36,9 +36,11 @@ public class Launcher {
         new SleepyCommand(eventHandler, twitchClient);
         new SharieCommand(eventHandler, twitchClient);
         new ThemeCommand(eventHandler, twitchClient);
+        new FAQCommand(eventHandler, twitchClient);
         new ShinyCommand(eventHandler, twitchClient);
         new SchoolCommand(eventHandler, twitchClient);
         new WhyCommand(eventHandler, twitchClient);
         new QuoteCommand(eventHandler, twitchClient, store);
+        new AddQuoteCommand(eventHandler, twitchClient, store);
     }
 }
