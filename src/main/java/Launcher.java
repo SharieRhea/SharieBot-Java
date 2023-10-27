@@ -42,5 +42,6 @@ public class Launcher {
         new WhyCommand(eventHandler, twitchClient);
         new QuoteCommand(eventHandler, twitchClient, store);
         new AddQuoteCommand(eventHandler, twitchClient, store);
+        new AddItemCommand(eventHandler, twitchClient, store);
     }
 }

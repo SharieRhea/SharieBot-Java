@@ -89,6 +89,7 @@ public class ShinyCommand extends Command {
     @Override
     protected void command(ChannelMessageEvent event) {
         sendMessage("@" + event.getUser().getName() + " found a " + getRarityAndItem() + "!");
+        logger.debug(event.getUser().getId());
     }
 
     /**
@@ -149,15 +150,3 @@ public class ShinyCommand extends Command {
         }
     }
 }
-
-/*
-    Current thoughts:
-     - text files suck, replace with a lightweight database?
-        - sqlite, maybe H2
-     - deployment (maybe at some point in the future?)
-        - AWS
-        - render
-     - make item a class?
-     - use hashmap to keep track of repeated items?
-     - how to integrate with !inventory?
- */

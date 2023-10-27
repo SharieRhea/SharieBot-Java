@@ -15,6 +15,7 @@ public class AddQuoteCommand extends Command {
      * Constructor to initialize the command, sets up onEvent behavior.
      * @param eventHandler The handler for all the commands.
      * @param client The twitchClient for the current session.
+     * @param dbStore The database connection to use.
      */
     public AddQuoteCommand(SimpleEventHandler eventHandler, TwitchClient client, Store dbStore) {
         super(eventHandler, client);
@@ -33,7 +34,6 @@ public class AddQuoteCommand extends Command {
             quote = words[1];
             command(event);
         }
-
     }
 
     /**
@@ -43,7 +43,7 @@ public class AddQuoteCommand extends Command {
     @Override
     protected void command(ChannelMessageEvent event) {
         try {
-            store.addQuote(quote);
+            sendMessage("Added quote number " + store.addQuote(quote));
         }
         catch (SQLException sqlException) {
             sendMessage("Unable to add quote!");
