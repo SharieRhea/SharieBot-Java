@@ -28,7 +28,7 @@ public class AddQuoteCommand extends Command {
      */
     @Override
     protected void parseCommand(ChannelMessageEvent event) {
-        if (event.getUser().getName().equals("shariemakesart") && event.getMessage().startsWith("!addquote")) {
+        if (event.getUser().getId().equals("170582504") && event.getMessage().startsWith("!addquote")) {
             // Split on " to get entire quote as one String
             String[] words = event.getMessage().split("\"");
             quote = words[1];
@@ -43,7 +43,7 @@ public class AddQuoteCommand extends Command {
     @Override
     protected void command(ChannelMessageEvent event) {
         try {
-            sendMessage("Added quote number " + store.addQuote(quote));
+            sendMessage("Added quote number " + store.addQuote(quote) + "!");
         }
         catch (SQLException sqlException) {
             sendMessage("Unable to add quote!");

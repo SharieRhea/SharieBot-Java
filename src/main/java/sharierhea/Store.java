@@ -61,13 +61,15 @@ public class Store {
      */
     public int addQuote(String text) throws SQLException {
         String sql = "INSERT INTO quote(text) VALUES(?)";
-        PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        PreparedStatement statement = connection.prepareStatement(sql);
         statement.setString(1, text);
         statement.executeUpdate();
-        return statement.getGeneratedKeys().getInt(0);
+        String sqlGetNumber = "SELECT COUNT(*) FROM item";
+        PreparedStatement statementGetNumber = connection.prepareStatement(sqlGetNumber);
+        return statementGetNumber.executeQuery().getInt(1);
     }
 
-    public void addItem(String itemName, String rarity) throws SQLException {
+    public int addItem(String itemName, String rarity) throws SQLException {
         String sqlGetID = "SELECT id FROM rarity WHERE title LIKE ?";
         PreparedStatement statementGetID = connection.prepareStatement(sqlGetID);
         statementGetID.setString(1, rarity);
@@ -75,11 +77,13 @@ public class Store {
         int rarityID = resultSet.getInt("id");
 
         String sql = "INSERT INTO item(rarityID, name) VALUES(?, ?)";
-        PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        PreparedStatement statement = connection.prepareStatement(sql);
         statement.setInt(1, rarityID);
         statement.setString(2, itemName);
 
         statement.executeUpdate();
-        //return statement.getGeneratedKeys().getInt(0);
+        String sqlGetNumber = "SELECT COUNT(*) FROM item";
+        PreparedStatement statementGetNumber = connection.prepareStatement(sqlGetNumber);
+        return statementGetNumber.executeQuery().getInt(1);
     }
 }
