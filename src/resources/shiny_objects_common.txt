@@ -1,4 +1,0 @@
-NullPointerException
-semicolon
-paintbrush
-mouse

@@ -38,7 +38,7 @@ public class Launcher {
         new ThemeCommand(eventHandler, twitchClient);
         new FAQCommand(eventHandler, twitchClient);
         new DiscordCommand(eventHandler, twitchClient);
-        new ShinyCommand(eventHandler, twitchClient);
+        new ShinyCommand(eventHandler, twitchClient, store);
         new SchoolCommand(eventHandler, twitchClient);
         new WhyCommand(eventHandler, twitchClient);
         new QuoteCommand(eventHandler, twitchClient, store);
