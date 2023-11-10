@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.LinkedList;
 
@@ -158,12 +159,7 @@ public class Store {
         int itemID = resultSet.getInt("id");
         insertItem(userID, itemID);
 
-        String sqlQueryRarityTitle = "SELECT title FROM rarity WHERE id = ?";
-        PreparedStatement statement = connection.prepareStatement(sqlQueryRarityTitle);
-        statement.setInt(1, rarityID);
-        ResultSet set = statement.executeQuery();
-        set.next();
-        return resultSet.getString("name") + " (" + set.getString("title") + ")";
+        return resultSet.getString("name") + " (" + getRarityTitle(rarityID) + ")";
     }
 
     /**
@@ -179,5 +175,44 @@ public class Store {
         statement.setString(1, userID);
         statement.setInt(2, itemID);
         statement.executeUpdate();
+    }
+
+    /**
+     * Gets a hashmap from rarityId -> number of items found for the given user.
+     * @param userID The id for the user whose inventory will be found.
+     * @return HashMap<Integer, Integer>
+     * @throws SQLException Nonexistent table or other.
+     */
+    public HashMap<Integer, Integer> getInventory(String userID) throws SQLException {
+        String sql = """
+                SELECT item.rarityID, SUM(count)
+                FROM (inventory JOIN item ON (inventory.itemID = item.id))
+                WHERE inventory.userID = ?
+                GROUP BY item.rarityID
+                ORDER BY item.rarityID""";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, userID);
+        ResultSet resultSet = statement.executeQuery();
+
+        HashMap<Integer, Integer> map = new HashMap<>();
+        while (resultSet.next()) {
+            map.put(resultSet.getInt("rarityID"), resultSet.getInt("SUM(count)"));
+        }
+        return map;
+    }
+
+    /**
+     * Gets the associated title for the given rarityID.
+     * @param rarityID The rarityID to use.
+     * @return The String title
+     * @throws SQLException Nonexistent table or other.
+     */
+    public String getRarityTitle(int rarityID) throws SQLException {
+        String sqlQueryRarityTitle = "SELECT title FROM rarity WHERE id = ?";
+        PreparedStatement statement = connection.prepareStatement(sqlQueryRarityTitle);
+        statement.setInt(1, rarityID);
+        ResultSet set = statement.executeQuery();
+        set.next();
+        return set.getString("title");
     }
 }

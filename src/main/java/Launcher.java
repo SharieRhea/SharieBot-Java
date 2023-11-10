@@ -36,6 +36,7 @@ public class Launcher {
         new SleepyCommand(eventHandler, twitchClient);
         new SharieCommand(eventHandler, twitchClient);
         new ThemeCommand(eventHandler, twitchClient);
+        new FontCommand(eventHandler, twitchClient);
         new FAQCommand(eventHandler, twitchClient);
         new DiscordCommand(eventHandler, twitchClient);
         new ShinyCommand(eventHandler, twitchClient, store);
@@ -44,5 +45,6 @@ public class Launcher {
         new QuoteCommand(eventHandler, twitchClient, store);
         new AddQuoteCommand(eventHandler, twitchClient, store);
         new AddItemCommand(eventHandler, twitchClient, store);
+        new InventoryCommand(eventHandler, twitchClient, store);
     }
 }
