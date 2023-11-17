@@ -12,6 +12,7 @@ public class DiscordCommand extends Command {
      */
     public DiscordCommand(SimpleEventHandler eventHandler, TwitchClient client) {
         super(eventHandler, client);
+        trigger = "!discord";
     }
 
     /**
@@ -20,7 +21,7 @@ public class DiscordCommand extends Command {
      */
     @Override
     protected void parseCommand(ChannelMessageEvent event) {
-        if (event.getMessage().contains("!discord"))
+        if (event.getMessage().contains(trigger))
             command(event);
     }
 

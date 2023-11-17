@@ -12,17 +12,9 @@ public class SchoolCommand extends Command {
      */
     public SchoolCommand(SimpleEventHandler eventHandler, TwitchClient client) {
         super(eventHandler, client);
+        trigger = "!school";
     }
 
-    /**
-     * Triggers command behavior for any message containing "!school".
-     * @param event The channel message event being checked.
-     */
-    @Override
-    protected void parseCommand(ChannelMessageEvent event) {
-        if (event.getMessage().contains("!school"))
-            command(event);
-    }
 
     /**
      * Sends a message explaining student status.

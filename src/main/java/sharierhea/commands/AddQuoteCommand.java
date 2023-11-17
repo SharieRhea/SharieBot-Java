@@ -20,6 +20,7 @@ public class AddQuoteCommand extends Command {
     public AddQuoteCommand(SimpleEventHandler eventHandler, TwitchClient client, Store dbStore) {
         super(eventHandler, client);
         store = dbStore;
+        trigger = "!addquote";
     }
 
     /**
@@ -28,7 +29,7 @@ public class AddQuoteCommand extends Command {
      */
     @Override
     protected void parseCommand(ChannelMessageEvent event) {
-        if (event.getUser().getId().equals("170582504") && event.getMessage().startsWith("!addquote")) {
+        if (event.getUser().getId().equals("170582504") && event.getMessage().startsWith(trigger)) {
             // Split on " to get entire quote as one String
             String[] words = event.getMessage().split("\"");
             quote = words[1];

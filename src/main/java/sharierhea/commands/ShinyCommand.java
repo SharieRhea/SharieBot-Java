@@ -5,10 +5,12 @@ import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import sharierhea.Store;
 import java.sql.SQLException;
+import java.util.regex.Pattern;
 
 
 public class ShinyCommand extends Command {
     private final Store store;
+    private final Pattern pattern = Pattern.compile("^[aeiou].*", Pattern.CASE_INSENSITIVE);
 
     /**
      * Constructor to initialize the command, sets up onEvent behavior.
@@ -18,16 +20,7 @@ public class ShinyCommand extends Command {
     public ShinyCommand(SimpleEventHandler eventHandler, TwitchClient client, Store dbstore) {
         super(eventHandler, client);
         store = dbstore;
-    }
-
-    /**
-     * Triggers command behavior for any message containing "!shiny"
-     * @param event The channel message event being checked.
-     */
-    @Override
-    protected void parseCommand(ChannelMessageEvent event) {
-        if (event.getMessage().contains("!shiny"))
-            command(event);
+        trigger = "!shiny";
     }
 
     /**
@@ -67,8 +60,9 @@ public class ShinyCommand extends Command {
             if (rarityID < 0)
                 throw new SQLException("Problem finding rarity id!");
 
-            sendMessage("@" + event.getUser().getName() + " found a(n) " +
-                    store.getItem(event.getUser().getId(), rarityID) + "!");
+            String item = store.getItem(event.getUser().getId(), rarityID);
+            String article = pattern.matcher(item).matches() ? "an" : "a";
+            sendMessage(String.format("@%s found %s %s!", event.getUser().getName(), article, item));
         }
         catch (SQLException sqlException) {
             logger.error(sqlException.getMessage());

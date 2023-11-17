@@ -13,17 +13,9 @@ public class FontCommand extends Command {
      */
     public FontCommand(SimpleEventHandler eventHandler, TwitchClient client) {
         super(eventHandler, client);
+        trigger = "!font";
     }
 
-    /**
-     * Triggers command behavior for any message containing "!font".
-     * @param event The channel message event being checked.
-     */
-    @Override
-    protected void parseCommand(ChannelMessageEvent event) {
-        if (event.getMessage().contains("!font"))
-            command(event);
-    }
 
     /**
      * Sends a message with the current font.

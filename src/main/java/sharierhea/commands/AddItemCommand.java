@@ -21,12 +21,13 @@ public class AddItemCommand extends Command {
     public AddItemCommand(SimpleEventHandler eventHandler, TwitchClient client, Store dbStore) {
         super(eventHandler, client);
         store = dbStore;
+        trigger = "!additem";
     }
 
 
     @Override
     protected void parseCommand(ChannelMessageEvent event) {
-        if (event.getUser().getId().equals("170582504") && event.getMessage().startsWith("!additem")) {
+        if (event.getUser().getId().equals("170582504") && event.getMessage().startsWith(trigger)) {
             String[] words = event.getMessage().split(" ");
 
             if (words.length != 3) {

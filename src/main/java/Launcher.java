@@ -7,6 +7,8 @@ import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The "main" class for SharieBot. This class launches the bot, authenticates with Twitch, and joins the chat.
@@ -32,19 +34,25 @@ public class Launcher {
         // Initializes the eventHandler that will be used for all commands.
         SimpleEventHandler eventHandler = twitchClient.getEventManager().getEventHandler(SimpleEventHandler.class);
 
+        List<Command> activeCommands = new ArrayList<>();
+
         // All active commands:
-        new SleepyCommand(eventHandler, twitchClient);
-        new SharieCommand(eventHandler, twitchClient);
-        new ThemeCommand(eventHandler, twitchClient);
-        new FontCommand(eventHandler, twitchClient);
-        new FAQCommand(eventHandler, twitchClient);
-        new DiscordCommand(eventHandler, twitchClient);
-        new ShinyCommand(eventHandler, twitchClient, store);
-        new SchoolCommand(eventHandler, twitchClient);
-        new WhyCommand(eventHandler, twitchClient);
-        new QuoteCommand(eventHandler, twitchClient, store);
+        activeCommands.add(new SleepyCommand(eventHandler, twitchClient));
+        activeCommands.add(new SharieCommand(eventHandler, twitchClient));
+        activeCommands.add(new ThemeCommand(eventHandler, twitchClient));
+        activeCommands.add(new FontCommand(eventHandler, twitchClient));
+        activeCommands.add(new FAQCommand(eventHandler, twitchClient));
+        activeCommands.add(new DiscordCommand(eventHandler, twitchClient));
+        activeCommands.add(new YoutubeCommand(eventHandler, twitchClient));
+        activeCommands.add(new GitHubCommand(eventHandler, twitchClient));
+        activeCommands.add(new SocialsCommand(eventHandler, twitchClient));
+        activeCommands.add(new ShinyCommand(eventHandler, twitchClient, store));
+        activeCommands.add(new InventoryCommand(eventHandler, twitchClient, store));
+        activeCommands.add(new SchoolCommand(eventHandler, twitchClient));
+        activeCommands.add(new QuoteCommand(eventHandler, twitchClient, store));
         new AddQuoteCommand(eventHandler, twitchClient, store);
         new AddItemCommand(eventHandler, twitchClient, store);
-        new InventoryCommand(eventHandler, twitchClient, store);
+        new WhyCommand(eventHandler, twitchClient);
+        new CommandsCommand(eventHandler,twitchClient, activeCommands);
     }
 }

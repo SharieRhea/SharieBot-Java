@@ -20,15 +20,7 @@ public class SleepyCommand extends Command{
      */
     public SleepyCommand(SimpleEventHandler eventHandler, TwitchClient client) {
         super(eventHandler, client);
-    }
-
-    /**
-     * Checks to see if a message should trigger this command, if so, calls the command behavior.
-     * @param event The channel message event being checked.
-     */
-    protected void parseCommand(ChannelMessageEvent event) {
-        if (event.getMessage().contains("!sleepy"))
-            command(event);
+        trigger = "!sleepy";
     }
 
     /**

@@ -12,16 +12,7 @@ public class WhyCommand extends Command {
      */
     public WhyCommand(SimpleEventHandler eventHandler, TwitchClient client) {
         super(eventHandler, client);
-    }
-
-    /**
-     * Triggers command behavior for any message containing "why".
-     * @param event The channel message event being checked.
-     */
-    @Override
-    protected void parseCommand(ChannelMessageEvent event) {
-        if (event.getMessage().toLowerCase().contains("why"))
-            command(event);
+        trigger = "why";
     }
 
     /**

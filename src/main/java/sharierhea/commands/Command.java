@@ -13,11 +13,12 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class Command {
     // Every command must have access to the twitchClient and the channel's name.
-    TwitchClient twitchClient;
+    private TwitchClient twitchClient;
     // todo: move channel name into a text file for re-usability
     // note: check to see if channel name has been hardcoded anywhere else
-    final String CHANNEL_NAME = "shariemakesart";
-    Logger logger = LoggerFactory.getLogger(Command.class);
+    private final String CHANNEL_NAME = "shariemakesart";
+    protected Logger logger = LoggerFactory.getLogger(Command.class);
+    protected String trigger;
 
     /**
      * Base constructor for all Commands.
@@ -33,7 +34,10 @@ public abstract class Command {
      * The method where each message is "parsed" to see if the applicable command is present.
      * @param event The channel message event being checked.
      */
-    protected abstract void parseCommand(ChannelMessageEvent event);
+    protected void parseCommand(ChannelMessageEvent event) {
+        if (event.getMessage().contains(trigger))
+            command(event);
+    }
 
     /**
      * The method that defines the command's behavior. Runs when parseCommand finds the command trigger.

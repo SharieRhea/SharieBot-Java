@@ -13,16 +13,7 @@ public class ThemeCommand extends Command {
      */
     public ThemeCommand(SimpleEventHandler eventHandler, TwitchClient client) {
         super(eventHandler, client);
-    }
-
-    /**
-     * Triggers command behavior for any message containing "!theme".
-     * @param event The channel message event being checked.
-     */
-    @Override
-    protected void parseCommand(ChannelMessageEvent event) {
-        if (event.getMessage().contains("!theme"))
-            command(event);
+        trigger = "!theme";
     }
 
     /**

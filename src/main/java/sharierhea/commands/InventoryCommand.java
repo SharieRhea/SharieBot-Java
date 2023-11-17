@@ -23,17 +23,7 @@ public class InventoryCommand extends Command {
     public InventoryCommand(SimpleEventHandler eventHandler, TwitchClient twitchClient, Store database) {
         super(eventHandler, twitchClient);
         store = database;
-    }
-
-    /**
-     * Checks a message for !inventory, if present, calls command().
-     * @param event The channel message event being checked.
-     */
-    @Override
-    protected void parseCommand(ChannelMessageEvent event) {
-        if (event.getMessage().contains("!inventory")) {
-            command(event);
-        }
+        trigger = "!inventory";
     }
 
     /**

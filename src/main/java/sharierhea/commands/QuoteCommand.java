@@ -18,6 +18,7 @@ public class QuoteCommand extends Command {
     public QuoteCommand(SimpleEventHandler eventHandler, TwitchClient client, Store dbStore) {
         super(eventHandler, client);
         store = dbStore;
+        trigger = "!quote";
     }
 
     /**
@@ -25,8 +26,9 @@ public class QuoteCommand extends Command {
      * if there is an integer argument provided for quote number.
      * @param event The channel message event being checked.
      */
+    @Override
     public void parseCommand(ChannelMessageEvent event) {
-        if (!event.getMessage().contains("!quote"))
+        if (!event.getMessage().contains(trigger))
             return;
 
         String[] words = event.getMessage().split(" ");
@@ -35,12 +37,11 @@ public class QuoteCommand extends Command {
             return;
         }
 
-        int quoteNumber = 0;
         for (int i = 0; i < words.length; i ++) {
             // if !quote is found and there is another word after it
             if (words[i].equals("!quote") && i + 1 < words.length) {
                 try {
-                    quoteNumber = Integer.parseInt(words[i + 1]);
+                    int quoteNumber = Integer.parseInt(words[i + 1]);
                     command(event, quoteNumber);
                     return;
                 }

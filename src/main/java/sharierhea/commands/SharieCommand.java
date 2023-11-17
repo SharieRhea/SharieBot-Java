@@ -13,17 +13,9 @@ public class SharieCommand extends Command {
      */
     public SharieCommand(SimpleEventHandler eventHandler, TwitchClient client) {
         super(eventHandler, client);
+        trigger = "!sharie";
     }
 
-    /**
-     * Triggers command behavior if a message contains "!sharie"
-     * @param event The channel message event being checked.
-     */
-    @Override
-    protected void parseCommand(ChannelMessageEvent event) {
-        if (event.getMessage().contains("!sharie"))
-            command(event);
-    }
 
     /**
      * Sends a message explaining "Sharie".
