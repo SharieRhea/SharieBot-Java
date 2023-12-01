@@ -5,6 +5,7 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
+import sharierhea.events.Raid;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,5 +55,8 @@ public class Launcher {
         new AddItemCommand(eventHandler, twitchClient, store);
         new WhyCommand(eventHandler, twitchClient);
         new CommandsCommand(eventHandler,twitchClient, activeCommands);
+
+        // EventListeners
+        // new Raid(eventHandler, twitchClient, credential);
     }
 }

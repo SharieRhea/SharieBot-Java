@@ -28,6 +28,6 @@ public class CommandsCommand extends Command {
     @Override
     protected void command(ChannelMessageEvent event) {
         String message = activeCommands.stream().map(command -> command.trigger).collect(Collectors.joining(", "));
-        sendMessage("Here is a list of all the current commands: " + message);
+        sendMessage("Here is a list of all the current commands: %s".formatted(message));
     }
 }

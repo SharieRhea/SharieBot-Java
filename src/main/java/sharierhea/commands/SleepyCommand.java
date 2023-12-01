@@ -29,7 +29,7 @@ public class SleepyCommand extends Command{
      */
     @EventSubscriber
     protected void command(ChannelMessageEvent event) {
-        sendMessage("@" + event.getUser().getName() + " is " + generateRandomValue() + "% sleepy!");
+        sendMessage("@%s is %d%% sleepy!".formatted(event.getUser().getName(), generateRandomValue()));
     }
 
     /**

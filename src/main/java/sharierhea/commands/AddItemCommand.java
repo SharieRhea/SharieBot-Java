@@ -44,7 +44,7 @@ public class AddItemCommand extends Command {
     @Override
     protected void command(ChannelMessageEvent event) {
         try {
-            sendMessage("Added item number " + store.addItem(itemName, rarity) + "!");
+            sendMessage("Added item number %d!".formatted(store.addItem(itemName, rarity)));
         }
         catch (SQLException sqlException) {
             sendMessage("Unable to add item!");

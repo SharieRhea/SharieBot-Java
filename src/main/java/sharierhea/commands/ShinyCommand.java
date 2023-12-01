@@ -62,7 +62,7 @@ public class ShinyCommand extends Command {
 
             String item = store.getItem(event.getUser().getId(), rarityID);
             String article = pattern.matcher(item).matches() ? "an" : "a";
-            sendMessage(String.format("@%s found %s %s!", event.getUser().getName(), article, item));
+            sendMessage("@%s found %s %s!".formatted(event.getUser().getName(), article, item));
         }
         catch (SQLException sqlException) {
             logger.error(sqlException.getMessage());

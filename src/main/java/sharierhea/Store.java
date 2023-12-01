@@ -4,15 +4,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.LinkedList;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Database layer to deal with connection to a sqlite database.
  */
 public class Store {
     private Connection connection;
+    private HashMap<Integer, String> rarityMap;
+    private final Logger logger;
 
     public record Quote(String id, String text, String date) { }
 
@@ -20,7 +21,7 @@ public class Store {
      * Constructor for store, attempts to establish a connection to the database.
      */
     public Store() {
-        Logger logger = LoggerFactory.getLogger(Store.class);
+        logger = LoggerFactory.getLogger(Store.class);
         try {
             String path = "jdbc:sqlite:src/resources/identifier.sqlite";
             connection = DriverManager.getConnection(path);
@@ -29,6 +30,17 @@ public class Store {
         catch (SQLException exception) {
             logger.error("Failed to connect to database", exception);
         }
+
+        try{
+            rarityMap = populateRarityMap();
+        }
+        catch (SQLException exception) {
+            logger.error("Failed to populate rarityMap", exception);
+        }
+    }
+
+    public HashMap<Integer, String> getRarityMap() {
+        return rarityMap;
     }
 
     /**
@@ -159,7 +171,7 @@ public class Store {
         int itemID = resultSet.getInt("id");
         insertItem(userID, itemID);
 
-        return resultSet.getString("name") + " (" + getRarityTitle(rarityID) + ")";
+        return resultSet.getString("name") + " (" + rarityMap.get(rarityID) + ")";
     }
 
     /**
@@ -202,17 +214,52 @@ public class Store {
     }
 
     /**
-     * Gets the associated title for the given rarityID.
-     * @param rarityID The rarityID to use.
-     * @return The String title
+     * Create the rarityMap based on the rarity table for repeated use.
+     * @return HashMap<Integer, String> rarityMap
+     * @throws SQLException Nonexistent table or other
+     */
+    private HashMap<Integer, String> populateRarityMap() throws SQLException {
+        String sql = "SELECT id, title FROM rarity";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        ResultSet resultSet = statement.executeQuery();
+        HashMap<Integer, String> map = new HashMap<>();
+        while (resultSet.next()) {
+            map.put(resultSet.getInt("id"), resultSet.getString("title"));
+        }
+        return map;
+    }
+
+    /**
+     * Returns a list of item names for a given user and rarityTitle.
+     * @param userID The userID to retrieve items for.
+     * @param rarityTitle The rarity to filter by.
+     * @return A list of names.
      * @throws SQLException Nonexistent table or other.
      */
-    public String getRarityTitle(int rarityID) throws SQLException {
-        String sqlQueryRarityTitle = "SELECT title FROM rarity WHERE id = ?";
-        PreparedStatement statement = connection.prepareStatement(sqlQueryRarityTitle);
-        statement.setInt(1, rarityID);
-        ResultSet set = statement.executeQuery();
-        set.next();
-        return set.getString("title");
+    public List<String> getItemNames(String userID, String rarityTitle) throws SQLException {
+        int rarityID;
+        var resultEntry = rarityMap.entrySet().stream().filter(entry ->
+            entry.getValue().equals(rarityTitle)).findFirst();
+        if (resultEntry.isPresent())
+            rarityID = resultEntry.get().getKey();
+        else {
+            logger.error("Could not find rarityID for given title.");
+            return new ArrayList<>();
+        }
+
+        String sql = """
+                SELECT DISTINCT item.name
+                FROM (inventory JOIN item ON (inventory.itemID = item.id))
+                WHERE inventory.userID = ? AND item.rarityID = ?""";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, userID);
+        statement.setInt(2, rarityID);
+        ResultSet resultSet = statement.executeQuery();
+
+        ArrayList<String> list = new ArrayList<>();
+        while (resultSet.next()) {
+            list.add(resultSet.getString("name"));
+        }
+        return list;
     }
 }

@@ -4,6 +4,7 @@ import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import sharierhea.Store;
+import java.util.Optional;
 
 import java.sql.SQLException;
 
@@ -28,28 +29,16 @@ public class QuoteCommand extends Command {
      */
     @Override
     public void parseCommand(ChannelMessageEvent event) {
-        if (!event.getMessage().contains(trigger))
-            return;
-
-        String[] words = event.getMessage().split(" ");
-        if (words.length < 2) {
-            command(event);
-            return;
-        }
-
-        for (int i = 0; i < words.length; i ++) {
-            // if !quote is found and there is another word after it
-            if (words[i].equals("!quote") && i + 1 < words.length) {
-                try {
-                    int quoteNumber = Integer.parseInt(words[i + 1]);
-                    command(event, quoteNumber);
-                    return;
-                }
-                catch (NumberFormatException ignored) {
-                }
+        Optional<String> argument = parseCommandArgument(event);
+        if (argument.isPresent()) {
+            try {
+                int quoteNumber = Integer.parseInt(argument.get());
+                command(event, quoteNumber);
+            }
+            catch (NumberFormatException numberFormatException) {
+                command(event);
             }
         }
-        command(event);
     }
 
     /**

@@ -3,11 +3,11 @@
 ### 0.1.0 - Completed 9.29.23
 Implement authentication for the bot through Twitch using the implicit grant flow.</br>
 Basic informational commands (plain text) such as !school, using an event handler to gather chat messages.</br>
-### 0.2.0 - In Progress
+### 0.2.0 - Completed 11.17.23
 Begin to build more user interactive commands, such as !shiny.</br>
 Add dependencies for database integration (SQLite) and create schemas.</br>
 Working connection between commands and data storage, including writing and reading.</br>
-### 0.3.0
+### 0.3.0 - In Progress
 Add further event handling for follows, subscriptions, and raids.</br>
 Auto-shoutout a streamer upon receiving a raid.</br>
 Cascade follow and subscription events to OBS to update visual overlay.</br>
