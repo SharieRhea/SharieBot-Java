@@ -27,6 +27,7 @@ public class Launcher {
                 .withEnableChat(true)
                 .withChatAccount(credential)
                 .withEnableHelix(true)
+                .withChatCommandsViaHelix(true)
                 .build();
 
         Store store = new Store();
@@ -51,12 +52,14 @@ public class Launcher {
         activeCommands.add(new InventoryCommand(eventHandler, twitchClient, store));
         activeCommands.add(new SchoolCommand(eventHandler, twitchClient));
         activeCommands.add(new QuoteCommand(eventHandler, twitchClient, store));
+        activeCommands.add(new RaidCommand(eventHandler, twitchClient));
+        activeCommands.add(new LurkCommand(eventHandler, twitchClient));
         new AddQuoteCommand(eventHandler, twitchClient, store);
         new AddItemCommand(eventHandler, twitchClient, store);
         new WhyCommand(eventHandler, twitchClient);
         new CommandsCommand(eventHandler,twitchClient, activeCommands);
 
         // EventListeners
-        // new Raid(eventHandler, twitchClient, credential);
+        new Raid(eventHandler, twitchClient, credential);
     }
 }

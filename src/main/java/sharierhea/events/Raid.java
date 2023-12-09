@@ -15,10 +15,8 @@ public class Raid extends EventListener<RaidEvent> {
 
     @Override
     public void handleEvent(RaidEvent event) {
-        // todo: generate new access token to include moderator:manage:shoutouts scope
-        sendMessage(String.format("Thanks for the raid @%s!", event.getRaider().getName()));
-        // fix: read docs
-        twitchClient.getHelix().sendShoutout(credential.getAccessToken(), "170582504", event.getRaider().getId(), "957074857");
+        sendMessage("Thanks for the raid @%s!".formatted(event.getRaider().getName()));
+        twitchClient.getHelix().sendShoutout(credential.getAccessToken(), "170582504", event.getRaider().getId(), "957074857").execute();
     }
 
 }

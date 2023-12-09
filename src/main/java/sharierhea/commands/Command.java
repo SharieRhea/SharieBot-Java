@@ -65,6 +65,10 @@ public abstract class Command {
         return Optional.empty();
     }
 
+    public TwitchClient getTwitchClient() {
+        return twitchClient;
+    }
+
     /**
      * The method that defines the command's behavior. Runs when parseCommand finds the command trigger.
      * @param event The channel message event that triggered the command.
