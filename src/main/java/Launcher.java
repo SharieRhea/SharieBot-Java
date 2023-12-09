@@ -63,3 +63,9 @@ public class Launcher {
         new Raid(eventHandler, twitchClient, credential);
     }
 }
+
+// on startup -> shuffle all the songs, and pick 5 to start
+// once queue gets down to 2 songs
+//   start a poll for the next songs
+// pick the next 5 songs from the original shuffled list, poll determines order
+// pick the next 10 songs, only the top 5 get played

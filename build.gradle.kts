@@ -1,5 +1,7 @@
 plugins {
     id("java")
+    application
+    id("org.openjfx.javafxplugin") version "0.0.10"
 }
 
 group = "org.example"
@@ -16,9 +18,18 @@ dependencies {
     implementation("com.github.twitch4j:twitch4j:1.17.0")
     implementation(group = "ch.qos.logback", name = "logback-classic", version = "1.4.7")
     implementation("org.xerial:sqlite-jdbc:3.43.2.0")
+    implementation("org.openjfx:javafx-media:19.0.2.1")
+    implementation("org.openjfx:javafx-controls:19.0.2.1")
+    implementation("org.openjfx:javafx-plugin:0.1.0")
     // implementation("com.tagtraum:ffsampledsp:0.9.53")
     testImplementation(platform("org.junit:junit-bom:5.9.2"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+}
+
+
+javafx {
+    version = "17"
+    modules = listOf("javafx.controls", "javafx.media")
 }
 
 tasks.test {
