@@ -14,6 +14,7 @@ import java.net.URI;
  */
 public class Authenticator {
     private final OAuth2Credential credential;
+    private final OAuth2Credential broadcasterCredential;
     private URI authURI;
 
     /**
@@ -24,6 +25,7 @@ public class Authenticator {
     public Authenticator() throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader("src/main/java/sharierhea/auth/accessToken.txt"))) {
             credential = new OAuth2Credential("twitch", reader.readLine());
+            broadcasterCredential = new OAuth2Credential("twitch", reader.readLine());
         }
     }
 
@@ -34,6 +36,8 @@ public class Authenticator {
     public OAuth2Credential getCredential() {
         return credential;
     }
+
+    public OAuth2Credential getBroadcasterCredential() { return broadcasterCredential; }
 
     /**
      * Accessor for authURI.

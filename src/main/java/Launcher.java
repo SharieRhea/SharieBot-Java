@@ -5,6 +5,7 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
+import sharierhea.events.PollEvent;
 import sharierhea.events.Raid;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ public class Launcher {
                 .withChatAccount(credential)
                 .withEnableHelix(true)
                 .withChatCommandsViaHelix(true)
+                .withEnablePubSub(true)
                 .build();
 
         Store store = new Store();
@@ -58,9 +60,12 @@ public class Launcher {
         new AddItemCommand(eventHandler, twitchClient, store);
         new WhyCommand(eventHandler, twitchClient);
         new CommandsCommand(eventHandler,twitchClient, activeCommands);
+        new PollCommand(eventHandler, twitchClient, authenticator.getBroadcasterCredential());
 
         // EventListeners
         new Raid(eventHandler, twitchClient, credential);
+        var pollListener = new PollEvent(eventHandler, twitchClient, credential);
+        eventHandler.registerListener(pollListener);
     }
 }
 
