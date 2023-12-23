@@ -7,8 +7,8 @@ import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import sharierhea.events.PollEvent;
 import sharierhea.events.Raid;
+import sharierhea.music.Jukebox;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +16,7 @@ import java.util.List;
  * The "main" class for SharieBot. This class launches the bot, authenticates with Twitch, and joins the chat.
  */
 public class Launcher {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         // Initialize an authenticator to receive credentials.
         Authenticator authenticator = new Authenticator();
         OAuth2Credential credential = authenticator.getCredential();
@@ -33,6 +33,9 @@ public class Launcher {
                 .build();
 
         Store store = new Store();
+
+        //Jukebox jukebox = new Jukebox(store);
+
         twitchClient.getChat().joinChannel("shariemakesart");
 
         // Initializes the eventHandler that will be used for all commands.
@@ -64,8 +67,7 @@ public class Launcher {
 
         // EventListeners
         new Raid(eventHandler, twitchClient, credential);
-        var pollListener = new PollEvent(eventHandler, twitchClient, credential);
-        eventHandler.registerListener(pollListener);
+        new PollEvent(eventHandler, twitchClient, credential);
     }
 }
 

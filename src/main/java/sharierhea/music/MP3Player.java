@@ -6,14 +6,15 @@ import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MP3Player extends Application {
 
     @Override
     public void start(Stage primaryStage) {
         String mp3FilePath = "src/resources/1AM.mp3";
-        Media media = new Media(new File(mp3FilePath).toURI().toString());
-        MediaPlayer mediaPlayer = new MediaPlayer(media);
+        AtomicReference<Media> media = new AtomicReference<>(new Media(new File(mp3FilePath).toURI().toString()));
+        MediaPlayer mediaPlayer = new MediaPlayer(media.get());
 
         // Optional: You can add event handlers to handle playback events
         mediaPlayer.setOnReady(() -> {
@@ -27,8 +28,12 @@ public class MP3Player extends Application {
         // Start playing the media
         mediaPlayer.play();
 
-        primaryStage.setTitle("MP3 Player");
-        primaryStage.show();
+       /* mediaPlayer.setOnEndOfMedia(() -> {
+            mediaPlayer.dispose();
+            media.set(new Media(new File("/home/sharie/Music/Stream Music/Mipha's Theme").toURI().toString()));
+            mediaPlayer = new MediaPlayer(media)
+            mediaPlayer.play();
+        });*/
     }
 
     public static void main(String[] args) {

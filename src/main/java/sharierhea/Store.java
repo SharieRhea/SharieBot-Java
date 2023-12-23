@@ -262,4 +262,70 @@ public class Store {
         }
         return list;
     }
+
+    /**
+     * Returns true if this song (identified by its hash) already exists in the
+     * table song
+     * @param hash The hash to check
+     * @return True if exists, false otherwise
+     * @throws SQLException
+     */
+    public boolean songExists(String hash) throws SQLException {
+        String sql = "SELECT id FROM song WHERE id LIKE ?";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, hash);
+        ResultSet resultSet = statement.executeQuery();
+        // If there are no rows in the result set, "isBeforeFirst" is false, otherwise true
+        return resultSet.isBeforeFirst();
+    }
+
+    /**
+     * First, queries the database for the artist/album id, if found returns it. Otherwise,
+     * add the new artist/album, re-query and return the id.
+     * @param data The artist/album name to add.
+     * @param attribute artist or album
+     * @return The id of the given artist/album name
+     * @throws SQLException
+     */
+    public int tryAddArtistOrAlbum(String data, String attribute) throws SQLException {
+        String query = "SELECT id FROM %s WHERE name LIKE ?".formatted(attribute);
+        // Todo: find a different way to dynamically set table name?
+        PreparedStatement statement = connection.prepareStatement(query);
+        statement.setString(1, data);
+        ResultSet resultSet = statement.executeQuery();
+
+        if (resultSet.isBeforeFirst()) {
+            resultSet.next();
+            return resultSet.getInt("id");
+        }
+
+        // Add the data
+        String sql = "INSERT INTO %s(name) VALUES(?)".formatted(attribute);
+        // Todo: find a different way to dynamically set table name?
+        PreparedStatement insertStatement = connection.prepareStatement(sql);
+        insertStatement.setString(1, data);
+        insertStatement.executeUpdate();
+
+        resultSet = statement.executeQuery();
+        resultSet.next();
+        return resultSet.getInt("id");
+    }
+
+    /**
+     * Adds a new song to the song table.
+     * @param hash The hash of the file (primary key)
+     * @param title The title of the song
+     * @param artistID Foreign key reference to the artist
+     * @param albumID Foreign key reference to the album
+     * @throws SQLException
+     */
+    public void addSong(String hash, String title, int artistID, int albumID) throws SQLException {
+        String sql = "INSERT INTO song(id, title, artistID, albumID) VALUES(?, ?, ?, ?)";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, hash);
+        statement.setString(2, title);
+        statement.setInt(3, artistID);
+        statement.setInt(4, albumID);
+        statement.executeUpdate();
+    }
 }
