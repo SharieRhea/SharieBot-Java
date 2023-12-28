@@ -5,22 +5,23 @@ import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.pubsub.domain.PollData;
 import com.github.twitch4j.pubsub.events.PollsEvent;
+import sharierhea.music.Jukebox;
 
-public class PollEvent extends EventListener<PollsEvent> {
+public class Poll extends EventListener<PollsEvent> {
+    private final Jukebox jukebox;
 
-    public PollEvent(SimpleEventHandler eventHandler, TwitchClient client, OAuth2Credential credential) {
+    public Poll(SimpleEventHandler eventHandler, TwitchClient client, OAuth2Credential credential, Jukebox jukebox) {
         super(eventHandler, client, PollsEvent.class);
         twitchClient.getPubSub().listenForPollEvents(credential, "170582504");
+        this.jukebox = jukebox;
     }
 
     @Override
     protected void handleEvent(PollsEvent event) {
-        if (event.getType() != PollsEvent.EventType.POLL_COMPLETE)
+        if (event.getType() != PollsEvent.EventType.POLL_COMPLETE && event.getType() != PollsEvent.EventType.POLL_TERMINATE)
             return;
 
-        var choices = event.getData().getChoices();
-        for (PollData.PollChoice choice : choices) {
-            logger.debug("%s: %d".formatted(choice.getTitle(), choice.getVotes().getTotal()));
-        }
+        if (event.getData().getTitle().equals("Vote for Upcoming Songs!"))
+            jukebox.handlePollResults(event.getData().getChoices());
     }
 }

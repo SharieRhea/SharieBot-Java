@@ -1,5 +1,6 @@
 package sharierhea;
 
+import com.github.twitch4j.pubsub.domain.PollData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -289,7 +290,6 @@ public class Store {
      */
     public int tryAddArtistOrAlbum(String data, String attribute) throws SQLException {
         String query = "SELECT id FROM %s WHERE name LIKE ?".formatted(attribute);
-        // Todo: find a different way to dynamically set table name?
         PreparedStatement statement = connection.prepareStatement(query);
         statement.setString(1, data);
         ResultSet resultSet = statement.executeQuery();
@@ -301,7 +301,6 @@ public class Store {
 
         // Add the data
         String sql = "INSERT INTO %s(name) VALUES(?)".formatted(attribute);
-        // Todo: find a different way to dynamically set table name?
         PreparedStatement insertStatement = connection.prepareStatement(sql);
         insertStatement.setString(1, data);
         insertStatement.executeUpdate();
@@ -326,6 +325,81 @@ public class Store {
         statement.setString(2, title);
         statement.setInt(3, artistID);
         statement.setInt(4, albumID);
+        statement.executeUpdate();
+    }
+
+    public String[] getSongMetadata(String hash) throws SQLException {
+        String[] returnValue = new String[3];
+        String songSQL = """
+        SELECT song.title, artist.name AS artist, album.name AS album
+        FROM song JOIN artist ON (song.artistID = artist.id)
+        JOIN album ON (song.albumID = album.id)
+        WHERE song.id LIKE ?""";
+        PreparedStatement statement = connection.prepareStatement(songSQL);
+        statement.setString(1, hash);
+        ResultSet songResultSet = statement.executeQuery();
+        songResultSet.next();
+        returnValue[0] = songResultSet.getString("title");
+        returnValue[1] = songResultSet.getString("artist");
+        returnValue[2] = songResultSet.getString("album");
+        return returnValue;
+    }
+
+    public int addPollResults(List<String> hashes, List<Integer> votes) throws SQLException {
+        if (hashes.size() != 5 || votes.size() != 5) {
+            logger.error("Invalid number of choices for poll results!");
+            return -1;
+        }
+
+        String sql = """
+        INSERT INTO poll(choice1, choice2, choice3, choice4, choice5,
+        votes1, votes2, votes3, votes4, votes5)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        int index = 1;
+        for (String hash : hashes) {
+            preparedStatement.setString(index, hash);
+            index++;
+        }
+        for (int vote: votes) {
+            preparedStatement.setInt(index, vote);
+            index++;
+        }
+        preparedStatement.executeUpdate();
+
+        String query = "SELECT MAX(id) FROM poll";
+        PreparedStatement statement = connection.prepareStatement(query);
+        ResultSet set = statement.executeQuery();
+        set.next();
+        return set.getInt("MAX(id)");
+    }
+
+    public void addPlay(String category, String hash, int id) throws SQLException {
+        String sql;
+        PreparedStatement statement;
+        switch (category) {
+            case "POLL":
+                sql = """
+                INSERT INTO play(songID, pollID) VALUES(?, ?)""";
+                statement = connection.prepareStatement(sql);
+                statement.setString(1, hash);
+                statement.setInt(2, id);
+                break;
+            case "USER":
+                sql = """
+                INSERT INTO play(songID, userID) VALUES(?, ?)""";
+                statement = connection.prepareStatement(sql);
+                statement.setString(1, hash);
+                statement.setInt(2, id);
+                break;
+            default:
+                sql = """
+                INSERT INTO play(songID) VALUES(?)""";
+                statement = connection.prepareStatement(sql);
+                statement.setString(1, hash);
+                break;
+        }
+
         statement.executeUpdate();
     }
 }

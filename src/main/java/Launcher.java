@@ -1,3 +1,5 @@
+import javafx.application.Application;
+import javafx.stage.Stage;
 import sharierhea.Store;
 import sharierhea.auth.Authenticator;
 import sharierhea.commands.*;
@@ -5,7 +7,7 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
-import sharierhea.events.PollEvent;
+import sharierhea.events.Poll;
 import sharierhea.events.Raid;
 import sharierhea.music.Jukebox;
 
@@ -15,8 +17,16 @@ import java.util.List;
 /**
  * The "main" class for SharieBot. This class launches the bot, authenticates with Twitch, and joins the chat.
  */
-public class Launcher {
-    public static void main(String[] args) throws Exception {
+public class Launcher extends Application {
+    // Singleton for the database
+    private final static Store store = new Store();
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage stage) throws Exception {
         // Initialize an authenticator to receive credentials.
         Authenticator authenticator = new Authenticator();
         OAuth2Credential credential = authenticator.getCredential();
@@ -32,9 +42,8 @@ public class Launcher {
                 .withEnablePubSub(true)
                 .build();
 
-        Store store = new Store();
-
-        //Jukebox jukebox = new Jukebox(store);
+        // Necessary for media player
+        Jukebox jukebox = new Jukebox(twitchClient, store, authenticator.getBroadcasterCredential());
 
         twitchClient.getChat().joinChannel("shariemakesart");
 
@@ -64,15 +73,12 @@ public class Launcher {
         new WhyCommand(eventHandler, twitchClient);
         new CommandsCommand(eventHandler,twitchClient, activeCommands);
         new PollCommand(eventHandler, twitchClient, authenticator.getBroadcasterCredential());
+        new SkipCommand(eventHandler, twitchClient, jukebox);
+        new PauseCommand(eventHandler, twitchClient, jukebox);
+        new ResumeCommand(eventHandler, twitchClient, jukebox);
 
         // EventListeners
         new Raid(eventHandler, twitchClient, credential);
-        new PollEvent(eventHandler, twitchClient, credential);
+        new Poll(eventHandler, twitchClient, credential, jukebox);
     }
 }
-
-// on startup -> shuffle all the songs, and pick 5 to start
-// once queue gets down to 2 songs
-//   start a poll for the next songs
-// pick the next 5 songs from the original shuffled list, poll determines order
-// pick the next 10 songs, only the top 5 get played
