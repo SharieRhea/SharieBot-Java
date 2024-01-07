@@ -17,14 +17,24 @@ public class SkipCommand extends Command {
 
     @Override
     protected void parseCommand(ChannelMessageEvent event) {
-        if (event.getUser().getId().equals("170582504") && event.getMessage().startsWith(trigger)) {
-            command(event);
+        if (event.getMessage().contains(trigger)) {
+            if (event.getUser().getId().equals("170582504"))
+                command(event);
+            else {
+                // todo: fix this hardcoded value
+                int currentSkipCounter = jukebox.addSkipUser(event.getUser().getId());
+                if (currentSkipCounter > 4){
+                    sendMessage("%d/5 chatters reached, song is being skipped...".formatted(currentSkipCounter));
+                    command(event);
+                }
+                else
+                    sendMessage("Don't like this song? %d/5 chatters needed to skip it!".formatted(currentSkipCounter));
+            }
         }
     }
 
     /**
      * The method that defines the command's behavior. Runs when parseCommand finds the command trigger.
-     *
      * @param event The channel message event that triggered the command.
      */
     @Override
@@ -32,7 +42,3 @@ public class SkipCommand extends Command {
         jukebox.skip();
     }
 }
-
-// Todo: multiple chatters need to use !skip to skip the current song
-// half of current viewers? 20%?
-// use hashmap of <username, boolean?> for keeping track of users

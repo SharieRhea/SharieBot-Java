@@ -328,6 +328,12 @@ public class Store {
         statement.executeUpdate();
     }
 
+    /**
+     *
+     * @param hash
+     * @return
+     * @throws SQLException
+     */
     public String[] getSongMetadata(String hash) throws SQLException {
         String[] returnValue = new String[3];
         String songSQL = """
