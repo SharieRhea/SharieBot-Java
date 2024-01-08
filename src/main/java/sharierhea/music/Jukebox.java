@@ -1,9 +1,6 @@
 package sharierhea.music;
 
 import java.io.*;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -23,7 +20,6 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaMarkerEvent;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
-import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sharierhea.Store;
@@ -38,6 +34,7 @@ public class Jukebox {
     private final static String DIRECTORY_PATH = "/home/sharie/Music/Stream Music";
     private final static String CHANNEL_NAME = "shariemakesart";
     private final HashMap<String, Path> filepaths;
+    private final MP3agic mp3agic = new MP3agic();
     private final Store store;
     private final Logger logger = LoggerFactory.getLogger(Jukebox.class);
 
@@ -45,6 +42,7 @@ public class Jukebox {
     private final Queue<String> songDump;
     private MediaPlayer mediaPlayer;
     private Media media;
+    private String currentSong = "";
 
     private FileWriter fileWriter;
     private List<String> currentPollSongs = new ArrayList<>();
@@ -63,7 +61,6 @@ public class Jukebox {
     }
 
     /**
-     *
      * @param twitchClient
      * @param database
      * @param credential
@@ -74,49 +71,64 @@ public class Jukebox {
         this.credential = credential;
         store = database;
         filepaths = new HashMap<>();
-        MP3agic mp3agic = new MP3agic();
 
         songQueue = new ArrayDeque<>();
         songDump = new ArrayDeque<>();
-        initializeSongList(mp3agic);
+        initializeSongList();
     }
 
     /**
      * Initializes the song list and adds new songs to the database if necessary.
      * Populates a hashmap for hash -> filepath
-     * @param mp3Metadata The object used to retrieve metadata
      * @throws IOException
      * @throws NoSuchAlgorithmException
      * @throws SQLException
      */
-    public void initializeSongList(MP3Metadata mp3Metadata) throws IOException, NoSuchAlgorithmException, SQLException {
+    public void initializeSongList() {
         // Clear the map to refresh this play session
         filepaths.clear();
+        // Dispose the old mediaPlayer (if the !refreshSongs command is being used)
+        if (mediaPlayer != null)
+            mediaPlayer.dispose();
 
         File directory = new File(DIRECTORY_PATH);
         File[] files = directory.listFiles();
-        if (files == null)
-            throw new FileNotFoundException("Invalid path to song directory.");
+        if (files == null) {
+            logger.error("Invalid path to song directory: " + DIRECTORY_PATH);
+            return;
+        }
         for (File file : files) {
-            String hexString = getFileHash(file);
+            String hexString;
+            try {
+                hexString = getFileHash(file);
+            }
+            catch (NoSuchAlgorithmException | IOException e) {
+                logger.error("Could not convert file to hash", e);
+                return;
+            }
 
             // add to hashmap<hash, filepath>
             filepaths.put(hexString, file.toPath());
 
-            // Song already exists, move on to the next one
-            if (store.songExists(hexString))
-                continue;
+            try {
+                // Song already exists, move on to the next one
+                if (store.songExists(hexString))
+                    continue;
 
-            String[] metadata = mp3Metadata.getMetadata(file);
-            if (metadata[0] == null || metadata[1] == null || metadata[2] == null) {
-                logger.error("Invalid or missing metadata for file %s".formatted(file.toPath()));
-                continue;
+                String[] metadata = mp3agic.getMetadata(file);
+                if (metadata[0] == null || metadata[1] == null || metadata[2] == null) {
+                    logger.error("Invalid or missing metadata for file %s".formatted(file.toPath()));
+                    continue;
+                }
+
+                String title = metadata[0];
+                int artistID = store.tryAddArtistOrAlbum(metadata[1], "artist");
+                int albumID = store.tryAddArtistOrAlbum(metadata[2], "album");
+                store.addSong(hexString, title, artistID, albumID);
             }
-
-            String title = metadata[0];
-            int artistID = store.tryAddArtistOrAlbum(metadata[1], "artist");
-            int albumID = store.tryAddArtistOrAlbum(metadata[2], "album");
-            store.addSong(hexString, title, artistID, albumID);
+            catch (SQLException e) {
+                logger.error("", e);
+            }
         }
 
         songDump.addAll(shuffleSongs());
@@ -176,6 +188,42 @@ public class Jukebox {
 
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setAutoPlay(true);
+
+        try {
+            String[] metadata = getMetadata(request.hash);
+            fileWriter = new FileWriter("src/resources/currentSong.txt", false);
+            // Update text file for OBS
+            currentSong = "%s - %s".formatted(metadata[0], metadata[1]);
+            fileWriter.write("Music from Gamechops.com      %s      ".formatted(currentSong));
+            fileWriter.close();
+        }
+        catch (IOException e) {
+            logger.error("IO failure for writing to currentSong.txt", e);
+        }
+
+        /*
+        if (songQueue.isEmpty())
+            // Last song is starting, send an announcement in chat about poll
+            twitchClient.getChat().sendMessage(CHANNEL_NAME, "/me A poll to choose the next round of songs will be starting soon, remember to vote!");
+        */
+
+        mediaPlayer.setOnEndOfMedia(() -> {
+            mediaPlayer.dispose();
+            try {
+                // Update the database with song information after entire song has been played (not skipped)
+                store.addPlay(request.category.name(), request.hash, request.id);
+            }
+            catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            play();
+        });
+    }
+
+    /**
+     * Sets up a media marker at 1:30 remaining for the song. To be used for generating automatic polls.
+     */
+    private void setUpMediaMarker() {
         mediaPlayer.setOnReady(() -> {
             Duration marker = media.getDuration()
                     .subtract(Duration.seconds(90));
@@ -192,33 +240,6 @@ public class Jukebox {
                 if (songQueue.isEmpty())
                     initiatePoll();
             }
-        });
-
-        try {
-            String[] metadata = getMetadata(request.hash);
-            fileWriter = new FileWriter("src/resources/currentSong.txt", false);
-            // Update text file for OBS
-            fileWriter.write("Music from Gamechops.com      %s - %s      ".formatted(metadata[0], metadata[1]));
-            fileWriter.close();
-        }
-        catch (IOException e) {
-            logger.error("IO failure for writing to currentSong.txt", e);
-        }
-
-        if (songQueue.isEmpty())
-            // Last song is starting, send an announcement in chat about poll
-            twitchClient.getChat().sendMessage(CHANNEL_NAME, "/me A poll to choose the next round of songs will be starting soon, remember to vote!");
-
-        mediaPlayer.setOnEndOfMedia(() -> {
-            mediaPlayer.dispose();
-            try {
-                // Update the database with song information after entire song has been played (not skipped)
-                store.addPlay(request.category.name(), request.hash, request.id);
-            }
-            catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-            play();
         });
     }
 
@@ -257,7 +278,7 @@ public class Jukebox {
     /**
      * Creates a sends a poll with 5 song options.
      */
-    private void initiatePoll() {
+    public void initiatePoll() {
         currentPollSongs.clear();
         // Ensure songDump has enough songs
         if (songDump.size() < POLL_OPTIONS)
@@ -326,5 +347,16 @@ public class Jukebox {
         }
     }
 
+    public String getCurrentSong() {
+        return currentSong;
+    }
+
     // todo: point redemption: user requested
+        // get the user input (chat message with the redemption)
+        // compare to list of songs and artists / SQL query for a match
+            // add that song to the queue send message "Song added successfully!"
+                // when adding to the queue, set the type to USER, and add userID
+            // otherwise, refund points? and send a reply "That wasn't a valid song!"
+
+    // todo: behavior for !song
 }

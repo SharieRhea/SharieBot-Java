@@ -7,10 +7,12 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
+import sharierhea.events.ChannelPointRedemption;
 import sharierhea.events.Poll;
 import sharierhea.events.Raid;
 import sharierhea.music.Jukebox;
 
+import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,17 +70,20 @@ public class Launcher extends Application {
         activeCommands.add(new QuoteCommand(eventHandler, twitchClient, store));
         activeCommands.add(new RaidCommand(eventHandler, twitchClient));
         activeCommands.add(new LurkCommand(eventHandler, twitchClient));
+        activeCommands.add(new SongCommand(eventHandler, twitchClient, jukebox));
         new AddQuoteCommand(eventHandler, twitchClient, store);
         new AddItemCommand(eventHandler, twitchClient, store);
         new WhyCommand(eventHandler, twitchClient);
         new CommandsCommand(eventHandler,twitchClient, activeCommands);
         new PollCommand(eventHandler, twitchClient, authenticator.getBroadcasterCredential());
-        new SkipCommand(eventHandler, twitchClient, jukebox);
+        new SkipCommand(eventHandler, twitchClient, jukebox, credential);
         new PauseCommand(eventHandler, twitchClient, jukebox);
         new ResumeCommand(eventHandler, twitchClient, jukebox);
+        new RefreshSongsCommand(eventHandler, twitchClient, jukebox);
 
         // EventListeners
         new Raid(eventHandler, twitchClient, credential);
         new Poll(eventHandler, twitchClient, credential, jukebox);
+        new ChannelPointRedemption(eventHandler, twitchClient, credential, jukebox);
     }
 }
