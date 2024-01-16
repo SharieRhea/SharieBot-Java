@@ -18,6 +18,8 @@ import java.util.List;
 
 /**
  * The "main" class for SharieBot. This class launches the bot, authenticates with Twitch, and joins the chat.
+ * Important: Need the following VM options to run:
+ * --module-path /home/sharie/Downloads/app/openjfx-21.0.1_linux-x64_bin-sdk/javafx-sdk-21.0.1/lib --add-modules=javafx.controls --add-modules=javafx.media
  */
 public class Launcher extends Application {
     // Singleton for the database
