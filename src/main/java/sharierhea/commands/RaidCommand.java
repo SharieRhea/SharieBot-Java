@@ -31,7 +31,6 @@ public class RaidCommand extends Command {
      */
     @Override
     protected void command(ChannelMessageEvent event) {
-        // TODO: come up with a better message
         sendMessage("Our raid message is \"Sharie needs to figure out a better raid message!\"");
     }
 }

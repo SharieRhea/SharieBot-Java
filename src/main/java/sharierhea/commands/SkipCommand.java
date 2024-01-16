@@ -33,9 +33,9 @@ public class SkipCommand extends Command {
             if (event.getUser().getId().equals("170582504"))
                 command(event);
             // Note: Skip functionality has been moved to channel point redemptions
-            /*else {
+            /*
+            else {
                 // Retrieve the number of current viewers and calculate threshold
-                // todo: move viewer count retrieval out to a different periodic method
                 var userIds = new ArrayList<String>();
                 userIds.add("170582504");
                 StreamList streamlist = getTwitchClient().getHelix().getStreams(credential.getAccessToken(), null, null, null, null, null, userIds, null).execute();

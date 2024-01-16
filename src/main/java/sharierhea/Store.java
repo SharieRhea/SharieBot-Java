@@ -1,12 +1,10 @@
 package sharierhea;
 
-import com.github.twitch4j.pubsub.domain.PollData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Database layer to deal with connection to a sqlite database.
@@ -40,10 +38,22 @@ public class Store {
         }
     }
 
-    public HashMap<Integer, String> getRarityMap() {
-        return rarityMap;
+    /**
+     * Attempts to insert a new userID and username into the user table, does nothing on an id
+     * conflict (user already exists)
+     * @param userID The userID
+     * @param username The username
+     * @throws SQLException Nonexistent table or other exception
+     */
+    public void getUser(String userID, String username) throws SQLException {
+        String sqlQueryUser = "INSERT INTO user(userID, username) VALUES(?, ?) ON CONFLICT(userID) DO NOTHING";
+        PreparedStatement statement = connection.prepareStatement(sqlQueryUser);
+        statement.setString(1, userID);
+        statement.setString(2, username);
+        statement.executeUpdate();
     }
 
+    // Quote methods
     /**
      * Queries the quote table and retrieves a random tuple.
      * @return Quote object with id, text, and date from the retrieved tuple.
@@ -85,6 +95,15 @@ public class Store {
         return statementGetNumber.executeQuery().getInt(1);
     }
 
+    // Shiny item methods
+    /**
+     * Accessor for the rarity map used for shiny items.
+     * @return The rarity map.
+     */
+    public HashMap<Integer, String> getRarityMap() {
+        return rarityMap;
+    }
+
     /**
      * Adds a new item to the item table with the provided name and foreign key reference
      * to its rarity level.
@@ -109,21 +128,6 @@ public class Store {
         String sqlGetNumber = "SELECT COUNT(*) FROM item";
         PreparedStatement statementGetNumber = connection.prepareStatement(sqlGetNumber);
         return statementGetNumber.executeQuery().getInt(1);
-    }
-
-    /**
-     * Attempts to insert a new userID and username into the user table, does nothing on an id
-     * conflict (user already exists)
-     * @param userID The userID
-     * @param username The username
-     * @throws SQLException Nonexistent table or other exception
-     */
-    public void getUser(String userID, String username) throws SQLException {
-        String sqlQueryUser = "INSERT INTO user(userID, username) VALUES(?, ?) ON CONFLICT(userID) DO NOTHING";
-        PreparedStatement statement = connection.prepareStatement(sqlQueryUser);
-        statement.setString(1, userID);
-        statement.setString(2, username);
-        statement.executeUpdate();
     }
 
     /**
@@ -264,12 +268,13 @@ public class Store {
         return list;
     }
 
+    // Music methods
     /**
      * Returns true if this song (identified by its hash) already exists in the
      * table song
      * @param hash The hash to check
      * @return True if exists, false otherwise
-     * @throws SQLException
+     * @throws SQLException No existent
      */
     public boolean songExists(String hash) throws SQLException {
         String sql = "SELECT id FROM song WHERE id LIKE ?";
@@ -286,7 +291,7 @@ public class Store {
      * @param data The artist/album name to add.
      * @param attribute artist or album
      * @return The id of the given artist/album name
-     * @throws SQLException
+     * @throws SQLException Nonexistent table or other
      */
     public int tryAddArtistOrAlbum(String data, String attribute) throws SQLException {
         String query = "SELECT id FROM %s WHERE name LIKE ?".formatted(attribute);
@@ -316,7 +321,7 @@ public class Store {
      * @param title The title of the song
      * @param artistID Foreign key reference to the artist
      * @param albumID Foreign key reference to the album
-     * @throws SQLException
+     * @throws SQLException Nonexistent table or other
      */
     public void addSong(String hash, String title, int artistID, int albumID) throws SQLException {
         String sql = "INSERT INTO song(id, title, artistID, albumID) VALUES(?, ?, ?, ?)";
@@ -329,10 +334,10 @@ public class Store {
     }
 
     /**
-     *
-     * @param hash
-     * @return
-     * @throws SQLException
+     * Retrieves song metadata for a given hash.
+     * @param hash The hash of the song to retrieve info from.
+     * @return String[3] title, artist, album
+     * @throws SQLException Nonexistent table or other
      */
     public String[] getSongMetadata(String hash) throws SQLException {
         String[] returnValue = new String[3];
@@ -351,6 +356,13 @@ public class Store {
         return returnValue;
     }
 
+    /**
+     * Parses, formats, and adds poll results to the database.
+     * @param hashes The list of songs that were poll options.
+     * @param votes The list of votes for each song (respectively).
+     * @return The poll's id/primary key in the database.
+     * @throws SQLException Nonexistent table or other
+     */
     public int addPollResults(List<String> hashes, List<Integer> votes) throws SQLException {
         if (hashes.size() != 5 || votes.size() != 5) {
             logger.error("Invalid number of choices for poll results!");
@@ -380,6 +392,15 @@ public class Store {
         return set.getInt("MAX(id)");
     }
 
+    /**
+     * Adds information about a song "play" once a song has ended.
+     * @param category The reason why the song was played (POLL, USER, or AUTO).
+     * @param hash The hash of the song that was played.
+     * @param pollID If the category was POLL, the id for the poll that caused this song to be
+     *               added to the queue.
+     * @param userID If the category was USER, the id for the user that requested the song.
+     * @throws SQLException Nonexistent table or other
+     */
     public void addPlay(String category, String hash, int pollID, String userID) throws SQLException {
         String sql;
         PreparedStatement statement;
@@ -409,6 +430,14 @@ public class Store {
         statement.executeUpdate();
     }
 
+    /**
+     * Returns the hash (primary key) of a song given it's title and artist. This is used to implement
+     * user song requests.
+     * @param title The title of the song.
+     * @param artist The artist of the song.
+     * @return The hash (primary key) of the song, or null.
+     * @throws SQLException Nonexistent table or other
+     */
     public String getSong(String title, String artist) throws SQLException {
         String sql = """
         SELECT song.id

@@ -19,7 +19,6 @@ public class FontCommand extends Command {
 
     /**
      * Sends a message with the current font.
-     * idea: not hardcoded?
      * @param event The channel message event that triggered the command.
      */
     @Override

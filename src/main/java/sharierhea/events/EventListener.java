@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
 public abstract class EventListener<T> {
     // Every command must have access to the twitchClient and the channel's name.
     protected TwitchClient twitchClient;
-    // todo: move channel name into a text file for re-usability
-    // note: check to see if channel name has been hardcoded anywhere else
     private final String CHANNEL_NAME = "shariemakesart";
     protected Logger logger = LoggerFactory.getLogger(EventListener.class);
 

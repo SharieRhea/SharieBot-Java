@@ -16,8 +16,6 @@ import java.util.Optional;
 public abstract class Command {
     // Every command must have access to the twitchClient and the channel's name.
     private TwitchClient twitchClient;
-    // todo: move channel name into a text file for re-usability
-    // note: check to see if channel name has been hardcoded anywhere else
     private final String CHANNEL_NAME = "shariemakesart";
     protected Logger logger = LoggerFactory.getLogger(Command.class);
     protected String trigger;

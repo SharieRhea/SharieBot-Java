@@ -61,6 +61,7 @@ public class Launcher extends Application {
         activeCommands.add(new SharieCommand(eventHandler, twitchClient));
         activeCommands.add(new ThemeCommand(eventHandler, twitchClient));
         activeCommands.add(new FontCommand(eventHandler, twitchClient));
+        activeCommands.add(new IDECommand(eventHandler, twitchClient));
         activeCommands.add(new FAQCommand(eventHandler, twitchClient));
         activeCommands.add(new DiscordCommand(eventHandler, twitchClient));
         activeCommands.add(new YoutubeCommand(eventHandler, twitchClient));

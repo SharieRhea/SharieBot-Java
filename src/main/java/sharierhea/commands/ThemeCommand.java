@@ -18,7 +18,6 @@ public class ThemeCommand extends Command {
 
     /**
      * Sends a message with the current theme.
-     * idea: not hardcoded?
      * @param event The channel message event that triggered the command.
      */
     @Override
