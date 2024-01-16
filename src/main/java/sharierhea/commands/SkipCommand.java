@@ -32,7 +32,8 @@ public class SkipCommand extends Command {
         if (event.getMessage().contains(trigger)) {
             if (event.getUser().getId().equals("170582504"))
                 command(event);
-            else {
+            // Note: Skip functionality has been moved to channel point redemptions
+            /*else {
                 // Retrieve the number of current viewers and calculate threshold
                 // todo: move viewer count retrieval out to a different periodic method
                 var userIds = new ArrayList<String>();
@@ -47,7 +48,7 @@ public class SkipCommand extends Command {
                 }
                 else
                     sendMessage("Don't like this song? %d/%d chatters want to skip it!".formatted(currentSkipCounter, skipThreshold));
-            }
+            }*/
         }
     }
 

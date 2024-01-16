@@ -380,7 +380,7 @@ public class Store {
         return set.getInt("MAX(id)");
     }
 
-    public void addPlay(String category, String hash, int id) throws SQLException {
+    public void addPlay(String category, String hash, int pollID, String userID) throws SQLException {
         String sql;
         PreparedStatement statement;
         switch (category) {
@@ -389,14 +389,14 @@ public class Store {
                 INSERT INTO play(songID, pollID) VALUES(?, ?)""";
                 statement = connection.prepareStatement(sql);
                 statement.setString(1, hash);
-                statement.setInt(2, id);
+                statement.setInt(2, pollID);
                 break;
             case "USER":
                 sql = """
                 INSERT INTO play(songID, userID) VALUES(?, ?)""";
                 statement = connection.prepareStatement(sql);
                 statement.setString(1, hash);
-                statement.setInt(2, id);
+                statement.setString(2, userID);
                 break;
             default:
                 sql = """
@@ -407,5 +407,24 @@ public class Store {
         }
 
         statement.executeUpdate();
+    }
+
+    public String getSong(String title, String artist) throws SQLException {
+        String sql = """
+        SELECT song.id
+        FROM song JOIN artist ON (song.artistID = artist.id)
+        JOIN album ON (song.albumID = album.id)
+        WHERE song.title LIKE ? AND artist.name LIKE ?""";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, title);
+        statement.setString(2, artist);
+
+        ResultSet songResultSet = statement.executeQuery();
+        // No matching song found
+        if (!songResultSet.isBeforeFirst())
+            return null;
+
+        songResultSet.next();
+        return songResultSet.getString("id");
     }
 }

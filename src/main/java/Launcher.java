@@ -12,7 +12,6 @@ import sharierhea.events.Poll;
 import sharierhea.events.Raid;
 import sharierhea.music.Jukebox;
 
-import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,11 +74,10 @@ public class Launcher extends Application {
         new AddItemCommand(eventHandler, twitchClient, store);
         new WhyCommand(eventHandler, twitchClient);
         new CommandsCommand(eventHandler,twitchClient, activeCommands);
-        new PollCommand(eventHandler, twitchClient, authenticator.getBroadcasterCredential());
-        new SkipCommand(eventHandler, twitchClient, jukebox, credential);
         new PauseCommand(eventHandler, twitchClient, jukebox);
         new ResumeCommand(eventHandler, twitchClient, jukebox);
         new RefreshSongsCommand(eventHandler, twitchClient, jukebox);
+        new SkipCommand(eventHandler, twitchClient, jukebox, credential);
 
         // EventListeners
         new Raid(eventHandler, twitchClient, credential);

@@ -38,7 +38,7 @@ public class Jukebox {
     private final Store store;
     private final Logger logger = LoggerFactory.getLogger(Jukebox.class);
 
-    private final Queue<SongRequest> songQueue;
+    private final ArrayDeque<SongRequest> songQueue;
     private final Queue<String> songDump;
     private MediaPlayer mediaPlayer;
     private Media media;
@@ -53,7 +53,7 @@ public class Jukebox {
         AUTO, POLL, USER
     }
 
-    private record SongRequest(String hash, SongCategories category, int id) {}
+    private record SongRequest(String hash, SongCategories category, int pollID, String userID) {}
 
     public int addSkipUser(String userID) {
         skipUsers.add(userID);
@@ -134,7 +134,7 @@ public class Jukebox {
         songDump.addAll(shuffleSongs());
         // Move first 5 songs to songQueue to start with
         for (int i = 0; i < AUTO_SONG_NUMBER; i++) {
-            songQueue.add(new SongRequest(songDump.remove(), SongCategories.AUTO, -1));
+            songQueue.add(new SongRequest(songDump.remove(), SongCategories.AUTO, -1, null));
         }
 
         play();
@@ -177,7 +177,7 @@ public class Jukebox {
     private void play() {
         // If the queue is empty, just grab one from the songDump instead
         if (songQueue.isEmpty())
-            songQueue.add(new SongRequest(songDump.remove(), SongCategories.AUTO, -1));
+            songQueue.add(new SongRequest(songDump.remove(), SongCategories.AUTO, -1, null));
 
         skipUsers.clear();
 
@@ -211,7 +211,7 @@ public class Jukebox {
             mediaPlayer.dispose();
             try {
                 // Update the database with song information after entire song has been played (not skipped)
-                store.addPlay(request.category.name(), request.hash, request.id);
+                store.addPlay(request.category.name(), request.hash, request.pollID, request.userID);
             }
             catch (SQLException e) {
                 throw new RuntimeException(e);
@@ -340,7 +340,7 @@ public class Jukebox {
                 if (counter == POLL_ACCEPTED)
                     break;
                 if (Objects.equals(numbers.get(i), map.get(hash))) {
-                    songQueue.add(new SongRequest(hash, SongCategories.POLL, pollID));
+                    songQueue.add(new SongRequest(hash, SongCategories.POLL, pollID, null));
                     counter++;
                 }
             }
@@ -349,6 +349,24 @@ public class Jukebox {
 
     public String getCurrentSong() {
         return currentSong;
+    }
+
+    public boolean handleRequest(String[] info, String userID, String username) {
+        String songHash;
+        boolean successful = false;
+        try {
+            songHash = store.getSong(info[0], info[1]);
+            if (songHash != null) {
+                store.getUser(userID, username);
+                // Requested song should always be played as soon as possible
+                songQueue.addFirst(new SongRequest(songHash, SongCategories.USER, -1, userID));
+                successful = true;
+            }
+        }
+        catch (SQLException e) {
+            logger.error("Problem finding song", e);
+        }
+        return successful;
     }
 
     // todo: point redemption: user requested
