@@ -19,7 +19,6 @@ public class ChannelPointRedemption extends EventListener<RewardRedeemedEvent> {
 
     @Override
     public void handleEvent(RewardRedeemedEvent event) {
-        // todo: see if there's a way to refund from code
         String eventTitle = event.getRedemption().getReward().getTitle();
 
         if (eventTitle.equals("Start a Music Poll"))
@@ -28,8 +27,8 @@ public class ChannelPointRedemption extends EventListener<RewardRedeemedEvent> {
         if (eventTitle.equals("Skip Song"))
             jukebox.skip();
 
-
         if (eventTitle.equals("Request a Song")) {
+            // todo: see if there's a way to refund from code
             String userID = event.getRedemption().getUser().getId();
             String username = event.getRedemption().getUser().getDisplayName();
             String userInput = event.getRedemption().getUserInput();

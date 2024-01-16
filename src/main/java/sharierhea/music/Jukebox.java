@@ -25,9 +25,9 @@ import org.slf4j.LoggerFactory;
 import sharierhea.Store;
 
 public class Jukebox {
-    private final static int AUTO_SONG_NUMBER = 5;
+    private final static int AUTO_SONG_NUMBER = 2;
     private final static int POLL_OPTIONS = 5;
-    private final static int POLL_ACCEPTED = 4;
+    private final static int POLL_ACCEPTED = 3;
     private final TwitchClient twitchClient;
     private final OAuth2Credential credential;
 
@@ -193,8 +193,9 @@ public class Jukebox {
             String[] metadata = getMetadata(request.hash);
             fileWriter = new FileWriter("src/resources/currentSong.txt", false);
             // Update text file for OBS
-            currentSong = "%s - %s".formatted(metadata[0], metadata[1]);
-            fileWriter.write("Music from Gamechops.com      %s      ".formatted(currentSong));
+            String titleAndArtist = "%s - %s".formatted(metadata[0], metadata[1]);
+            currentSong = "%s by %s from %s".formatted(metadata[0], metadata[1], metadata[2]);
+            fileWriter.write("Music from Gamechops.com      %s      ".formatted(titleAndArtist));
             fileWriter.close();
         }
         catch (IOException e) {
@@ -368,13 +369,4 @@ public class Jukebox {
         }
         return successful;
     }
-
-    // todo: point redemption: user requested
-        // get the user input (chat message with the redemption)
-        // compare to list of songs and artists / SQL query for a match
-            // add that song to the queue send message "Song added successfully!"
-                // when adding to the queue, set the type to USER, and add userID
-            // otherwise, refund points? and send a reply "That wasn't a valid song!"
-
-    // todo: behavior for !song
 }

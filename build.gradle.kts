@@ -12,8 +12,8 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.twitch4j:twitch4j:1.17.0")
-    implementation(group = "ch.qos.logback", name = "logback-classic", version = "1.4.7")
+    implementation("com.github.twitch4j:twitch4j:1.19.0")
+    implementation(group = "ch.qos.logback", name = "logback-classic", version = "1.4.12")
     implementation("org.xerial:sqlite-jdbc:3.43.2.0")
     implementation("org.openjfx:javafx-plugin:0.1.0")
     implementation("com.mpatric:mp3agic:0.9.1")

@@ -10,6 +10,7 @@ import com.github.twitch4j.TwitchClientBuilder;
 import sharierhea.events.ChannelPointRedemption;
 import sharierhea.events.Poll;
 import sharierhea.events.Raid;
+import sharierhea.events.Ad;
 import sharierhea.music.Jukebox;
 
 import java.util.ArrayList;
@@ -83,5 +84,6 @@ public class Launcher extends Application {
         new Raid(eventHandler, twitchClient, credential);
         new Poll(eventHandler, twitchClient, credential, jukebox);
         new ChannelPointRedemption(eventHandler, twitchClient, credential, jukebox);
+        new Ad(eventHandler, twitchClient);
     }
 }

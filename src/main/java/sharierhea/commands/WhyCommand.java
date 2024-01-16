@@ -15,6 +15,13 @@ public class WhyCommand extends Command {
         trigger = "why";
     }
 
+    @Override
+    protected void parseCommand(ChannelMessageEvent event) {
+        if (event.getMessage().toLowerCase().contains(trigger)) {
+            command(event);
+        }
+    }
+
     /**
      * Sends a snarky message.
      * @param event The channel message event that triggered the command.
