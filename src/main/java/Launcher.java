@@ -1,5 +1,6 @@
 import javafx.application.Application;
 import javafx.stage.Stage;
+import sharierhea.SocketHandler;
 import sharierhea.Store;
 import sharierhea.auth.Authenticator;
 import sharierhea.commands.*;
@@ -10,7 +11,7 @@ import com.github.twitch4j.TwitchClientBuilder;
 import sharierhea.events.ChannelPointRedemption;
 import sharierhea.events.Poll;
 import sharierhea.events.Raid;
-import sharierhea.events.Ad;
+import sharierhea.events.AdBegin;
 import sharierhea.music.Jukebox;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.List;
 public class Launcher extends Application {
     // Singleton for the database
     private final static Store store = new Store();
+    private final static SocketHandler socket = new SocketHandler();
 
     public static void main(String[] args) {
         launch(args);
@@ -82,11 +84,12 @@ public class Launcher extends Application {
         new ResumeCommand(eventHandler, twitchClient, jukebox);
         new RefreshSongsCommand(eventHandler, twitchClient, jukebox);
         new SkipCommand(eventHandler, twitchClient, jukebox, credential);
+        new TestCommand(eventHandler, twitchClient, socket);
 
         // EventListeners
         new Raid(eventHandler, twitchClient, credential);
         new Poll(eventHandler, twitchClient, credential, jukebox);
         new ChannelPointRedemption(eventHandler, twitchClient, credential, jukebox);
-        new Ad(eventHandler, twitchClient);
+        new AdBegin(eventHandler, twitchClient, socket);
     }
 }

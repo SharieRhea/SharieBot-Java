@@ -20,6 +20,6 @@ public class SongCommand extends Command {
      */
     @Override
     protected void command(ChannelMessageEvent event) {
-        sendMessage("@%s the currently playing song is %s".formatted(event.getUser().getName(), jukebox.getCurrentSong()));
+        sendMessage("@%s the currently playing song is %s!".formatted(event.getUser().getName(), jukebox.getCurrentSong()));
     }
 }

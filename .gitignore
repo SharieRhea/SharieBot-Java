@@ -44,3 +44,7 @@ bin/
 .DS_Store
 
 **/users/
+
+accessToken.txt
+uriInfo.txt
+socketInfo.txt
