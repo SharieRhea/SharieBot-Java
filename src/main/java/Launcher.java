@@ -46,6 +46,7 @@ public class Launcher extends Application {
                 .withEnableHelix(true)
                 .withChatCommandsViaHelix(true)
                 .withEnablePubSub(true)
+                .withEnableEventSocket(true)
                 .build();
 
         // Necessary for media player
@@ -90,6 +91,6 @@ public class Launcher extends Application {
         new Raid(eventHandler, twitchClient, credential);
         new Poll(eventHandler, twitchClient, credential, jukebox);
         new ChannelPointRedemption(eventHandler, twitchClient, credential, jukebox);
-        new AdBegin(eventHandler, twitchClient, socket);
+        new AdBegin(eventHandler, twitchClient, socket, authenticator.getBroadcasterCredential());
     }
 }

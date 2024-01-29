@@ -17,11 +17,12 @@ dependencies {
     implementation("org.xerial:sqlite-jdbc:3.43.2.0")
     implementation("org.openjfx:javafx-plugin:0.1.0")
     implementation("com.mpatric:mp3agic:0.9.1")
-    implementation("io.obs-websocket.community:client:2.0.0")
+    implementation("io.obs-websocket.community:client:2.0.0") {
+        exclude("org.slf4j", "slf4j-simple")
+    }
     testImplementation(platform("org.junit:junit-bom:5.9.2"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
 }
-
 
 javafx {
     version = "17"
