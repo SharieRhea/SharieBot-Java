@@ -8,10 +8,7 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
-import sharierhea.events.ChannelPointRedemption;
-import sharierhea.events.Poll;
-import sharierhea.events.Raid;
-import sharierhea.events.AdBegin;
+import sharierhea.events.*;
 import sharierhea.music.Jukebox;
 
 import java.util.ArrayList;
@@ -36,6 +33,7 @@ public class Launcher extends Application {
         // Initialize an authenticator to receive credentials.
         Authenticator authenticator = new Authenticator();
         OAuth2Credential credential = authenticator.getCredential();
+        OAuth2Credential broadcasterToken = authenticator.getBroadcasterCredential();
 
         // Build the twitchClient.
         TwitchClient twitchClient = TwitchClientBuilder.builder()
@@ -70,7 +68,7 @@ public class Launcher extends Application {
         activeCommands.add(new YoutubeCommand(eventHandler, twitchClient));
         activeCommands.add(new GitHubCommand(eventHandler, twitchClient));
         activeCommands.add(new SocialsCommand(eventHandler, twitchClient));
-        activeCommands.add(new ShinyCommand(eventHandler, twitchClient, store));
+        activeCommands.add(new ShinyCommand(eventHandler, twitchClient, store, socket));
         activeCommands.add(new InventoryCommand(eventHandler, twitchClient, store));
         activeCommands.add(new SchoolCommand(eventHandler, twitchClient));
         activeCommands.add(new QuoteCommand(eventHandler, twitchClient, store));
@@ -91,6 +89,8 @@ public class Launcher extends Application {
         new Raid(eventHandler, twitchClient, credential);
         new Poll(eventHandler, twitchClient, credential, jukebox);
         new ChannelPointRedemption(eventHandler, twitchClient, credential, jukebox);
-        new AdBegin(eventHandler, twitchClient, socket, authenticator.getBroadcasterCredential());
+        new AdBegin(eventHandler, twitchClient, socket, broadcasterToken);
+        new Follow(eventHandler, twitchClient, socket);
+        new Subscription(eventHandler, twitchClient, socket, broadcasterToken);
     }
 }

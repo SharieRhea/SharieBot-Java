@@ -3,6 +3,7 @@ package sharierhea.commands;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
+import sharierhea.SocketHandler;
 import sharierhea.Store;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
@@ -11,15 +12,17 @@ import java.util.regex.Pattern;
 public class ShinyCommand extends Command {
     private final Store store;
     private final Pattern pattern = Pattern.compile("^[aeiou].*", Pattern.CASE_INSENSITIVE);
+    private final SocketHandler socket;
 
     /**
      * Constructor to initialize the command, sets up onEvent behavior.
      * @param eventHandler The handler for all the commands.
      * @param client The twitchClient for the current session.
      */
-    public ShinyCommand(SimpleEventHandler eventHandler, TwitchClient client, Store dbstore) {
+    public ShinyCommand(SimpleEventHandler eventHandler, TwitchClient client, Store dbstore, SocketHandler socketHandler) {
         super(eventHandler, client);
         store = dbstore;
+        socket = socketHandler;
         trigger = "!shiny";
     }
 
@@ -63,6 +66,10 @@ public class ShinyCommand extends Command {
             String item = store.getItem(event.getUser().getId(), rarityID);
             String article = pattern.matcher(item).matches() ? "an" : "a";
             sendMessage("@%s found %s %s!".formatted(event.getUser().getName(), article, item));
+
+            // If a mythic item is found, play overlay effects
+            if (rarityID == 5)
+                socket.showAndHideSource("Alert Effects", "BlueGlimmer", 2);
         }
         catch (SQLException sqlException) {
             logger.error(sqlException.getMessage());

@@ -6,7 +6,7 @@ import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import sharierhea.SocketHandler;
 
 public class TestCommand extends Command {
-    private SocketHandler socket;
+    private final SocketHandler socket;
 
     public TestCommand(SimpleEventHandler eventHandler, TwitchClient twitchClient, SocketHandler socketHandler) {
         super(eventHandler, twitchClient);
@@ -26,6 +26,6 @@ public class TestCommand extends Command {
      */
     @Override
     protected void command(ChannelMessageEvent event) {
-        socket.setSceneItemVisible("main", "FaceCam");
+        socket.showAndHideSource("Alert Effects", "WhiteGlimmer", 2);
     }
 }

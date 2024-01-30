@@ -5,6 +5,9 @@ import io.obswebsocket.community.client.OBSRemoteController;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.Duration;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SocketHandler {
     OBSRemoteController obsRemoteController;
@@ -75,6 +78,25 @@ public class SocketHandler {
     public String getCurrentScene() {
         var response = obsRemoteController.getCurrentProgramScene(100);
         return response.getCurrentProgramSceneName();
+    }
+
+    /**
+     * Toggles the visibility of the given source, showing the source for the given number of seconds.
+     * @param sceneName The scene OR group in which the source resides.
+     * @param sourceName The name of the source to show.
+     * @param seconds The number of seconds for the source to remain visible.
+     */
+    public void showAndHideSource(String sceneName, String sourceName, int seconds) {
+        setSceneItemVisible(sceneName, sourceName);
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                setSceneItemHidden(sceneName, sourceName);
+                timer.cancel();
+            }
+        };
+        timer.schedule(task, Duration.ofSeconds(seconds).toMillis());
     }
 
 }
