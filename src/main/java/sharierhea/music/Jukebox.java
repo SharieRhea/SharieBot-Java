@@ -39,15 +39,16 @@ public class Jukebox {
     private final Logger logger = LoggerFactory.getLogger(Jukebox.class);
 
     private final ArrayDeque<SongRequest> songQueue;
+    private boolean skippable = true;
     private final Queue<String> songDump;
     private MediaPlayer mediaPlayer;
     private Media media;
     private String currentSong = "";
 
     private FileWriter fileWriter;
-    private List<String> currentPollSongs = new ArrayList<>();
+    private final List<String> currentPollSongs = new ArrayList<>();
 
-    private Set<String> skipUsers = new HashSet<>();
+    private final Set<String> skipUsers = new HashSet<>();
 
     private enum SongCategories {
         AUTO, POLL, USER
@@ -55,18 +56,17 @@ public class Jukebox {
 
     private record SongRequest(String hash, SongCategories category, int pollID, String userID) {}
 
+    /**
+     * Adds the given user to the list of users who want to skip the current song.
+     * @param userID The userID for given user.
+     * @return The number of users who want to skip the current song.
+     */
     public int addSkipUser(String userID) {
         skipUsers.add(userID);
         return skipUsers.size();
     }
 
-    /**
-     * @param twitchClient
-     * @param database
-     * @param credential
-     * @throws Exception
-     */
-    public Jukebox(TwitchClient twitchClient, Store database, OAuth2Credential credential) throws Exception {
+    public Jukebox(TwitchClient twitchClient, Store database, OAuth2Credential credential){
         this.twitchClient = twitchClient;
         this.credential = credential;
         store = database;
@@ -80,9 +80,6 @@ public class Jukebox {
     /**
      * Initializes the song list and adds new songs to the database if necessary.
      * Populates a hashmap for hash -> filepath
-     * @throws IOException
-     * @throws NoSuchAlgorithmException
-     * @throws SQLException
      */
     public void initializeSongList() {
         // Clear the map to refresh this play session
@@ -144,8 +141,6 @@ public class Jukebox {
      * Returns a string of the file's hash using SHA-256
      * @param file The file to hash
      * @return Hexadecimal string of the hash
-     * @throws NoSuchAlgorithmException
-     * @throws IOException
      */
     private String getFileHash(File file) throws NoSuchAlgorithmException, IOException {
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
@@ -172,7 +167,6 @@ public class Jukebox {
     /**
      * Sets up and begins playing the next song in the queue. Eventhandlers for starting polls, playing next song,
      * and adding play information to the database.
-     * @throws IOException
      */
     private void play() {
         // If the queue is empty, just grab one from the songDump instead
@@ -182,6 +176,7 @@ public class Jukebox {
         skipUsers.clear();
 
         SongRequest request = songQueue.remove();
+        skippable = request.category != SongCategories.USER;
         // URI normalization for spaces, manually replace 's
         String path = filepaths.get(request.hash).toUri().normalize().toString().replace("'", "%27");
         media = new Media(path);
@@ -263,9 +258,13 @@ public class Jukebox {
     /**
      * Functionality for the !skip command, stop current song and start the next song.
      */
-    public void skip() {
-        mediaPlayer.dispose();
-        play();
+    public boolean skip() {
+        if (skippable) {
+            mediaPlayer.dispose();
+            play();
+            return true;
+        }
+        return false;
     }
 
     public void pause() {

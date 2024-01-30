@@ -4,16 +4,13 @@ import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
-import com.github.twitch4j.helix.domain.StreamList;
 import sharierhea.music.Jukebox;
-
-import java.util.ArrayList;
 
 
 public class SkipCommand extends Command {
     private static final double VIEWER_PERCENTAGE = 0.25;
-    private Jukebox jukebox;
-    private OAuth2Credential credential;
+    private final Jukebox jukebox;
+    private final OAuth2Credential credential;
 
     public SkipCommand(SimpleEventHandler eventHandler, TwitchClient twitchClient, Jukebox media, OAuth2Credential credential) {
         super(eventHandler, twitchClient);
@@ -58,6 +55,7 @@ public class SkipCommand extends Command {
      */
     @Override
     protected void command(ChannelMessageEvent event) {
-        jukebox.skip();
+        if (!jukebox.skip())
+            sendMessage("This song cannot be skipped because it was requested by a chatter!");
     }
 }

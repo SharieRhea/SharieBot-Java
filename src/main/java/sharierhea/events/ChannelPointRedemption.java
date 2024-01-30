@@ -8,7 +8,7 @@ import sharierhea.music.Jukebox;
 
 public class ChannelPointRedemption extends EventListener<RewardRedeemedEvent> {
     private final OAuth2Credential credential;
-    private Jukebox jukebox;
+    private final Jukebox jukebox;
 
     public ChannelPointRedemption(SimpleEventHandler eventHandler, TwitchClient client, OAuth2Credential credential, Jukebox jukebox) {
         super(eventHandler, client, RewardRedeemedEvent.class);
@@ -24,8 +24,10 @@ public class ChannelPointRedemption extends EventListener<RewardRedeemedEvent> {
         if (eventTitle.equals("Start a Music Poll"))
             jukebox.initiatePoll();
 
-        if (eventTitle.equals("Skip Song"))
-            jukebox.skip();
+        if (eventTitle.equals("Skip Song")) {
+            if (!jukebox.skip())
+                sendMessage("This song cannot be skipped because it was requested by a chatter! (Points will be refunded)");
+        }
 
         if (eventTitle.equals("Request a Song")) {
             // todo: see if there's a way to refund from code

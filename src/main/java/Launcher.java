@@ -75,6 +75,8 @@ public class Launcher extends Application {
         activeCommands.add(new RaidCommand(eventHandler, twitchClient));
         activeCommands.add(new LurkCommand(eventHandler, twitchClient));
         activeCommands.add(new SongCommand(eventHandler, twitchClient, jukebox));
+        activeCommands.add(new RecentRequestsCommand(eventHandler, twitchClient, store));
+        activeCommands.add(new RecentSongsCommand(eventHandler, twitchClient, store));
         new AddQuoteCommand(eventHandler, twitchClient, store);
         new AddItemCommand(eventHandler, twitchClient, store);
         new WhyCommand(eventHandler, twitchClient);

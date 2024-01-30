@@ -456,4 +456,54 @@ public class Store {
         songResultSet.next();
         return songResultSet.getString("id");
     }
+
+    /**
+     * Returns a list of song titles that were recently requested by a given user.
+     * @param userID The userID to filter by.
+     * @return List of maximum 5 recent song titles. The list is empty if the user hasn't requested any songs.
+     * @throws SQLException Nonexistent table or other.
+     */
+    public List<String> getRecentSongRequests(String userID) throws SQLException {
+        String sql = """
+        SELECT song.title
+        FROM song JOIN play ON (song.id = play.songID)
+        WHERE play.userID LIKE ?
+        ORDER BY play.timestamp DESC
+        LIMIT 5""";
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, userID);
+
+        ResultSet resultSet = statement.executeQuery();
+        ArrayList<String> list = new ArrayList<>();
+
+        if (!resultSet.isBeforeFirst())
+            return list;
+
+        while (resultSet.next()) {
+            list.add(resultSet.getString("title"));
+        }
+        return list;
+    }
+
+    /**
+     * Returns a list of recently played songs.
+     * @return A list of maximum 5 song titles.
+     * @throws SQLException Nonexistent table or other.
+     */
+    public List<String> getRecentSongs() throws SQLException {
+        String sql = """
+        SELECT song.title
+        FROM song JOIN play ON (song.id = play.songID)
+        ORDER BY play.timestamp DESC
+        LIMIT 5""";
+        PreparedStatement statement = connection.prepareStatement(sql);
+
+        ResultSet resultSet = statement.executeQuery();
+        ArrayList<String> list = new ArrayList<>();
+
+        while (resultSet.next()) {
+            list.add(resultSet.getString("title"));
+        }
+        return list;
+    }
 }

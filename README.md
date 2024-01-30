@@ -13,8 +13,8 @@
 * Wrangle mp3 handling for the music portion of the chatbot.
 * Implement shuffle behavior.
 * Integrate automatic polls for selecting upcoming songs, song request feature, and song skip feature through channel point redemptions.
-### 0.4.0
-* Implement statistical commands such as !playhistory for music.
+### 0.4.0 - Completed 1.30.24
+* Implement statistical commands such as !recentsongs for music.
 * Allow users to see their history of requested songs.
 * Automatic scene-switching for ad breaks.
 * Custom alerts for follows, subscriptions, and point redemptions.
