@@ -24,6 +24,6 @@ public class Subscription extends EventListener<ChannelSubscribeEvent> {
 
     @Override
     protected void handleEvent(ChannelSubscribeEvent event) {
-        socket.showAndHideSource("Alert Effects", "BlueGlimmer", 2);
+        socket.showAndHideSource(socket.getCurrentScene(), "BlueGlimmer", 2);
     }
 }

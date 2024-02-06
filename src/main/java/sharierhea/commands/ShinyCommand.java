@@ -69,7 +69,7 @@ public class ShinyCommand extends Command {
 
             // If a mythic item is found, play overlay effects
             if (rarityID == 5)
-                socket.showAndHideSource("Alert Effects", "BlueGlimmer", 2);
+                socket.showAndHideSource(socket.getCurrentScene(), "BlueGlimmer", 2);
         }
         catch (SQLException sqlException) {
             logger.error(sqlException.getMessage());

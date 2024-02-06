@@ -26,6 +26,6 @@ public class TestCommand extends Command {
      */
     @Override
     protected void command(ChannelMessageEvent event) {
-        socket.showAndHideSource("Alert Effects", "WhiteGlimmer", 2);
+        socket.showAndHideSource(socket.getCurrentScene(), "WhiteGlimmer", 2);
     }
 }
