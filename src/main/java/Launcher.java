@@ -43,9 +43,10 @@ public class Launcher extends Application {
                 .withChatAccount(credential)
                 .withEnableHelix(true)
                 .withChatCommandsViaHelix(true)
-                .withEnablePubSub(true)
                 .withEnableEventSocket(true)
                 .build();
+
+        twitchClient.getClientHelper().enableFollowEventListener("170582504", "shariemakesart");
 
         // Necessary for media player
         Jukebox jukebox = new Jukebox(twitchClient, store, authenticator.getBroadcasterCredential());
@@ -85,14 +86,14 @@ public class Launcher extends Application {
         new ResumeCommand(eventHandler, twitchClient, jukebox);
         new RefreshSongsCommand(eventHandler, twitchClient, jukebox);
         new SkipCommand(eventHandler, twitchClient, jukebox, credential);
-        new TestCommand(eventHandler, twitchClient, socket);
+        new TestCommand(eventHandler, twitchClient, broadcasterToken);
 
         // EventListeners
         new Raid(eventHandler, twitchClient, credential);
-        new Poll(eventHandler, twitchClient, credential, jukebox);
-        new ChannelPointRedemption(eventHandler, twitchClient, credential, jukebox);
+        new Poll(eventHandler, twitchClient, broadcasterToken, jukebox);
+        new ChannelPointRedemption(eventHandler, twitchClient, broadcasterToken, jukebox);
         new AdBegin(eventHandler, twitchClient, socket, broadcasterToken);
-        new Follow(eventHandler, twitchClient, socket);
+        new Follow(eventHandler, twitchClient, broadcasterToken, socket);
         new Subscription(eventHandler, twitchClient, socket, broadcasterToken);
     }
 }

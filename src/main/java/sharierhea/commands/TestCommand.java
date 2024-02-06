@@ -1,16 +1,14 @@
 package sharierhea.commands;
 
+import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
 import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
-import sharierhea.SocketHandler;
 
 public class TestCommand extends Command {
-    private final SocketHandler socket;
 
-    public TestCommand(SimpleEventHandler eventHandler, TwitchClient twitchClient, SocketHandler socketHandler) {
+    public TestCommand(SimpleEventHandler eventHandler, TwitchClient twitchClient, OAuth2Credential token) {
         super(eventHandler, twitchClient);
-        socket = socketHandler;
         trigger = "!test";
     }
 
@@ -26,6 +24,6 @@ public class TestCommand extends Command {
      */
     @Override
     protected void command(ChannelMessageEvent event) {
-        socket.showAndHideSource(socket.getCurrentScene(), "WhiteGlimmer", 2);
+
     }
 }

@@ -14,7 +14,6 @@ import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.eventsub.domain.PollChoice;
 import com.github.twitch4j.eventsub.domain.PollStatus;
 import com.github.twitch4j.helix.domain.Poll;
-import com.github.twitch4j.pubsub.domain.PollData;
 import javafx.event.EventHandler;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaMarkerEvent;
@@ -307,16 +306,16 @@ public class Jukebox {
      * other songs.
      * @param results The results object from the eventhandler.
      */
-    public void handlePollResults(List<PollData.PollChoice> results) {
+    public void handlePollResults(List<PollChoice> results) {
         // add poll results to the database
         ArrayList<String> hashes = new ArrayList<>();
         ArrayList<Integer> votes = new ArrayList<>();
         HashMap<String, Integer> map = new HashMap<>();
         int pollID;
         int index = 0;
-        for (PollData.PollChoice choice : results) {
+        for (PollChoice choice : results) {
             String hash = currentPollSongs.get(index);
-            int vote = choice.getTotalVoters();
+            int vote = choice.getVotes() == null ? 0 : choice.getVotes();
             hashes.add(hash);
             votes.add(vote);
             map.put(hash, vote);
