@@ -1,37 +1,33 @@
 package sharierhea.commands;
 
-import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.philippheuer.events4j.simple.domain.EventSubscriber;
-import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sharierhea.Launcher;
 
 import java.util.Optional;
+
+import static sharierhea.Launcher.CHANNEL_NAME;
 
 /**
  * An abstract base class for a Command. Ensures that at the bare minimum, there is a method to check for
  * whether the command should be triggered and there is a method that defines the command's behavior.
  */
 public abstract class Command {
-    // Every command must have access to the twitchClient and the channel's name.
-    private TwitchClient twitchClient;
-    private final String CHANNEL_NAME = "shariemakesart";
     protected Logger logger = LoggerFactory.getLogger(Command.class);
     protected String trigger;
 
     /**
      * Base constructor for all Commands.
-     * @param eventHandler The main eventHandler that listens for events.
-     * @param client The active and connected TwitchClient.
      */
-    protected Command(SimpleEventHandler eventHandler, TwitchClient client) {
-        twitchClient = client;
-        eventHandler.onEvent(ChannelMessageEvent.class, this::parseCommand);
+    protected Command() {
+        Launcher.eventHandler.onEvent(ChannelMessageEvent.class, this::parseCommand);
     }
 
     /**
      * The method where each message is "parsed" to see if the applicable command is present.
+     *
      * @param event The channel message event being checked.
      */
     protected void parseCommand(ChannelMessageEvent event) {
@@ -39,8 +35,11 @@ public abstract class Command {
             command(event);
     }
 
+    // idea: separate parseCommand for broadcaster only?
+
     /**
      * Parses a command that may have one argument after its trigger. If an argument is present, return it.
+     *
      * @param event The message being checked.
      * @return String argument or Optional.empty()
      */
@@ -54,7 +53,7 @@ public abstract class Command {
             return Optional.empty();
         }
 
-        for (int i = 0; i < words.length; i ++) {
+        for (int i = 0; i < words.length; i++) {
             // if trigger is found and there is another word after it, return that word
             if (words[i].equals(trigger) && i + 1 < words.length)
                 return Optional.of(words[i + 1]);
@@ -63,18 +62,15 @@ public abstract class Command {
         return Optional.empty();
     }
 
-    public TwitchClient getTwitchClient() {
-        return twitchClient;
-    }
-
     /**
      * The method that defines the command's behavior. Runs when parseCommand finds the command trigger.
+     *
      * @param event The channel message event that triggered the command.
      */
     @EventSubscriber
     protected abstract void command(ChannelMessageEvent event);
 
     protected void sendMessage(String message) {
-        twitchClient.getChat().sendMessage(CHANNEL_NAME, message);
+        Launcher.twitchClient.getChat().sendMessage(CHANNEL_NAME, message);
     }
 }

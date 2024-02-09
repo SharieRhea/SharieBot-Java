@@ -1,23 +1,19 @@
 package sharierhea.commands;
 
-import com.github.philippheuer.events4j.simple.SimpleEventHandler;
-import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
-import sharierhea.music.Jukebox;
+import sharierhea.Launcher;
 
 
 public class ResumeCommand extends Command {
-    private Jukebox jukebox;
 
-    public ResumeCommand(SimpleEventHandler eventHandler, TwitchClient twitchClient, Jukebox media) {
-        super(eventHandler, twitchClient);
+    public ResumeCommand() {
+        super();
         trigger = "!resume";
-        jukebox = media;
     }
 
     @Override
     protected void parseCommand(ChannelMessageEvent event) {
-        if (event.getUser().getId().equals("170582504") && event.getMessage().startsWith(trigger)) {
+        if (event.getUser().getId().equals(Launcher.CHANNEL_ID) && event.getMessage().startsWith(trigger)) {
             command(event);
         }
     }
@@ -29,6 +25,6 @@ public class ResumeCommand extends Command {
      */
     @Override
     protected void command(ChannelMessageEvent event) {
-        jukebox.resume();
+        Launcher.jukebox.resume();
     }
 }

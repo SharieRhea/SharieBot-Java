@@ -1,25 +1,21 @@
 package sharierhea.events;
 
-import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
-import com.github.philippheuer.events4j.simple.SimpleEventHandler;
-import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.eventsub.events.ChannelPointsCustomRewardRedemptionEvent;
 import com.github.twitch4j.eventsub.subscriptions.SubscriptionTypes;
-import sharierhea.music.Jukebox;
+
+import static sharierhea.Launcher.*;
 
 public class ChannelPointRedemption extends EventListener<ChannelPointsCustomRewardRedemptionEvent> {
-    private final Jukebox jukebox;
 
-    public ChannelPointRedemption(SimpleEventHandler eventHandler, TwitchClient client, OAuth2Credential broadcasterToken, Jukebox jukebox) {
-        super(eventHandler, client, ChannelPointsCustomRewardRedemptionEvent.class);
+    public ChannelPointRedemption() {
+        super(ChannelPointsCustomRewardRedemptionEvent.class);
         twitchClient.getEventSocket().register(
                 broadcasterToken,
                 SubscriptionTypes.CHANNEL_POINTS_CUSTOM_REWARD_REDEMPTION_ADD.prepareSubscription(
-                        builder -> builder.broadcasterUserId("170582504").build(),
+                        builder -> builder.broadcasterUserId(CHANNEL_ID).build(),
                         null
                 )
         );
-        this.jukebox = jukebox;
     }
 
     @Override

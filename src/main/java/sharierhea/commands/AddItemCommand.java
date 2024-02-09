@@ -1,26 +1,19 @@
 package sharierhea.commands;
 
-import com.github.philippheuer.events4j.simple.SimpleEventHandler;
-import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
-import sharierhea.Store;
+import sharierhea.Launcher;
 
 import java.sql.SQLException;
 
 public class AddItemCommand extends Command {
-    private Store store;
     private String itemName;
     private String rarity;
 
     /**
      * Constructor to initialize the command, sets up onEvent behavior.
-     * @param eventHandler The handler for all the commands.
-     * @param client The twitchClient for the current session.
-     * @param dbStore The database connection to use.
      */
-    public AddItemCommand(SimpleEventHandler eventHandler, TwitchClient client, Store dbStore) {
-        super(eventHandler, client);
-        store = dbStore;
+    public AddItemCommand() {
+        super();
         trigger = "!additem";
     }
 
@@ -44,9 +37,8 @@ public class AddItemCommand extends Command {
     @Override
     protected void command(ChannelMessageEvent event) {
         try {
-            sendMessage("Added item number %d!".formatted(store.addItem(itemName, rarity)));
-        }
-        catch (SQLException sqlException) {
+            sendMessage("Added item number %d!".formatted(Launcher.STORE.addItem(itemName, rarity)));
+        } catch (SQLException sqlException) {
             sendMessage("Unable to add item!");
             logger.error("Unable to add item", sqlException);
         }

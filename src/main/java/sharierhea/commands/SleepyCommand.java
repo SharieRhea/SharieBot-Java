@@ -1,8 +1,6 @@
 package sharierhea.commands;
 
-import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.philippheuer.events4j.simple.domain.EventSubscriber;
-import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 
 import java.util.Random;
@@ -11,20 +9,19 @@ import java.util.Random;
  * The !sleepy command generates a random number from 0 to 100 inclusive as a measure of the
  * user's sleepiness.
  */
-public class SleepyCommand extends Command{
+public class SleepyCommand extends Command {
 
     /**
      * Constructor to initialize the command, sets up onEvent behavior.
-     * @param eventHandler The handler for all the commands.
-     * @param client The twitchClient for the current session.
      */
-    public SleepyCommand(SimpleEventHandler eventHandler, TwitchClient client) {
-        super(eventHandler, client);
+    public SleepyCommand() {
+        super();
         trigger = "!sleepy";
     }
 
     /**
      * Sends a message in chat announcing the user's sleepiness.
+     *
      * @param event The channel message event that triggered the command.
      */
     @EventSubscriber
@@ -34,6 +31,7 @@ public class SleepyCommand extends Command{
 
     /**
      * Generates a random number 0 to 100 inclusive for use in the command's method.
+     *
      * @return The generated number.
      */
     private int generateRandomValue() {

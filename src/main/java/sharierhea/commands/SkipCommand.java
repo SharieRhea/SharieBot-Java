@@ -1,33 +1,28 @@
 package sharierhea.commands;
 
-import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
-import com.github.philippheuer.events4j.simple.SimpleEventHandler;
-import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
-import sharierhea.music.Jukebox;
+import sharierhea.Launcher;
 
 
 public class SkipCommand extends Command {
     private static final double VIEWER_PERCENTAGE = 0.25;
-    private final Jukebox jukebox;
-    private final OAuth2Credential credential;
 
-    public SkipCommand(SimpleEventHandler eventHandler, TwitchClient twitchClient, Jukebox media, OAuth2Credential credential) {
-        super(eventHandler, twitchClient);
+    public SkipCommand() {
+        super();
         trigger = "!skip";
-        jukebox = media;
-        this.credential = credential;
     }
 
     /**
      * If the streamer uses the !skip command, the song is immediately skipped. Otherwise, retrieve the current
      * number of viewers and calculate a threshold for number of chatters needed to skip the song.
+     *
      * @param event The channel message event being checked.
      */
     @Override
     protected void parseCommand(ChannelMessageEvent event) {
+        // TODO: add an enum switch for what type of skipping behavior to use
         if (event.getMessage().contains(trigger)) {
-            if (event.getUser().getId().equals("170582504"))
+            if (event.getUser().getId().equals(Launcher.CHANNEL_ID))
                 command(event);
             // Note: Skip functionality has been moved to channel point redemptions
             /*
@@ -51,11 +46,12 @@ public class SkipCommand extends Command {
 
     /**
      * The method that defines the command's behavior. Runs when parseCommand finds the command trigger.
+     *
      * @param event The channel message event that triggered the command.
      */
     @Override
     protected void command(ChannelMessageEvent event) {
-        if (!jukebox.skip())
+        if (!Launcher.jukebox.skip())
             sendMessage("This song cannot be skipped because it was requested by a chatter!");
     }
 }

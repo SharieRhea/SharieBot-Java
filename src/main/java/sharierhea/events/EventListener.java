@@ -1,19 +1,16 @@
 package sharierhea.events;
 
-import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.philippheuer.events4j.simple.domain.EventSubscriber;
-import com.github.twitch4j.TwitchClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static sharierhea.Launcher.*;
+
 public abstract class EventListener<T> {
     // Every command must have access to the twitchClient and the channel's name.
-    protected TwitchClient twitchClient;
-    private final String CHANNEL_NAME = "shariemakesart";
     protected Logger logger = LoggerFactory.getLogger(EventListener.class);
 
-    protected EventListener(SimpleEventHandler eventHandler, TwitchClient client, Class<T> eventClass) {
-        twitchClient = client;
+    protected EventListener(Class<T> eventClass) {
         eventHandler.onEvent(eventClass, this::handleEvent);
     }
 
