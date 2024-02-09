@@ -11,6 +11,8 @@ import com.github.twitch4j.TwitchClientBuilder;
 import sharierhea.events.*;
 import sharierhea.music.Jukebox;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +23,7 @@ import java.util.List;
  */
 public class Launcher extends Application {
     // Singleton for the database
-    private final static Store store = new Store();
+    public final static Store store = new Store();
     private final static SocketHandler socket = new SocketHandler();
 
     public static void main(String[] args) {
@@ -52,6 +54,7 @@ public class Launcher extends Application {
         Jukebox jukebox = new Jukebox(twitchClient, store, authenticator.getBroadcasterCredential());
 
         twitchClient.getChat().joinChannel("shariemakesart");
+        updateTotalFollowersAndSubs(twitchClient, broadcasterToken);
 
         // Initializes the eventHandler that will be used for all commands.
         SimpleEventHandler eventHandler = twitchClient.getEventManager().getEventHandler(SimpleEventHandler.class);
@@ -95,5 +98,26 @@ public class Launcher extends Application {
         new AdBegin(eventHandler, twitchClient, socket, broadcasterToken);
         new Follow(eventHandler, twitchClient, broadcasterToken, socket);
         new Subscription(eventHandler, twitchClient, socket, broadcasterToken);
+    }
+
+    private void updateTotalFollowersAndSubs(TwitchClient twitchClient, OAuth2Credential broadcasterToken) {
+        var response = twitchClient.getHelix().getSubscriptions(broadcasterToken.getAccessToken(), "170582504", null, null, null).execute();
+        String numberOfSubscribers = response.getTotal().toString();
+
+        try (FileWriter writer = new FileWriter("src/resources/OBSTextFiles/totalSubscribers.txt", false)) {
+            writer.write(numberOfSubscribers);
+            writer.flush();
+        }
+        catch (IOException ignored) {}
+
+        var response2 = twitchClient.getHelix().getChannelFollowers(broadcasterToken.getAccessToken(), "170582504", null, null, null).execute();
+        String numberOfFollowers = response2.getTotal().toString();
+
+        try (FileWriter writer = new FileWriter("src/resources/OBSTextFiles/totalFollowers.txt", false)) {
+            writer.write(numberOfFollowers);
+            writer.flush();
+        }
+        catch (IOException ignored) {
+        }
     }
 }

@@ -41,7 +41,7 @@ public class Subscription extends EventListener<ChannelSubscribeEvent> {
         }
 
         var response = twitchClient.getHelix().getSubscriptions(broadcasterToken.getAccessToken(), "170582504", null, null, null).execute();
-        int numberOfSubscribers = response.getTotal();
+        String numberOfSubscribers = response.getTotal().toString();
 
         try (FileWriter writer = new FileWriter("src/resources/OBSTextFiles/totalSubscribers.txt", false)) {
             writer.write(numberOfSubscribers);
