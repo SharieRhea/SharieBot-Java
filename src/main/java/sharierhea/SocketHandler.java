@@ -1,6 +1,8 @@
 package sharierhea;
 
 import io.obswebsocket.community.client.OBSRemoteController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -9,17 +11,24 @@ import java.time.Duration;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static sharierhea.Launcher.ENABLE_OBS_WEBSOCKET;
+
 public class SocketHandler {
     OBSRemoteController obsRemoteController;
+    private final Logger logger = LoggerFactory.getLogger(Store.class);
 
-    public SocketHandler() {
+    public SocketHandler() throws IOException {
+        if (!ENABLE_OBS_WEBSOCKET)
+            return;
+
         String ip;
         String pass;
         try (BufferedReader reader = new BufferedReader(new FileReader("src/main/java/sharierhea/auth/socketInfo.txt"))) {
             ip = reader.readLine();
             pass = reader.readLine();
         } catch (IOException exception) {
-            throw new RuntimeException(exception);
+            logger.error("Unable to read credentials for OBS websocket", exception);
+            throw new IOException(exception);
         }
 
         obsRemoteController = OBSRemoteController.builder()
@@ -30,13 +39,16 @@ public class SocketHandler {
             .build();
 
         obsRemoteController.connect();
+        // todo: implement on ready callback to prevent requests before connection has succeeded
+        // todo: figure out how to throw an exception if connection fails
+            // if websocket is enabled and can't connect, program should fail
     }
 
     /**
      * Changes the current scene in OBS to the specified scene name.
      * @param sceneName The scene to switch to.
      */
-    public void changeScene(String sceneName) {
+    public void changeScene(String sceneName){
         obsRemoteController.setCurrentProgramScene(sceneName, 100);
     }
 

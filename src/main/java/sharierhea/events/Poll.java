@@ -2,12 +2,14 @@ package sharierhea.events;
 
 import com.github.twitch4j.eventsub.events.ChannelPollEndEvent;
 import com.github.twitch4j.eventsub.subscriptions.SubscriptionTypes;
+import sharierhea.music.Jukebox;
 
 import static sharierhea.Launcher.*;
 
 public class Poll extends EventListener<ChannelPollEndEvent> {
+    private final Jukebox JUKEBOX;
 
-    public Poll() {
+    public Poll(Jukebox media) throws Exception {
         super(ChannelPollEndEvent.class);
         twitchClient.getEventSocket().register(
                 broadcasterToken,
@@ -16,11 +18,15 @@ public class Poll extends EventListener<ChannelPollEndEvent> {
                         null
                 )
         );
+        if (media == null)
+            throw new Exception("Jukebox has not been initialized.");
+        else
+            JUKEBOX = media;
     }
 
     @Override
     protected void handleEvent(ChannelPollEndEvent event) {
         if (event.getTitle().equals("Vote for Upcoming Songs!"))
-            jukebox.handlePollResults(event.getChoices());
+            JUKEBOX.handlePollResults(event.getChoices());
     }
 }

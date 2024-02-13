@@ -2,12 +2,14 @@ package sharierhea.events;
 
 import com.github.twitch4j.eventsub.events.ChannelPointsCustomRewardRedemptionEvent;
 import com.github.twitch4j.eventsub.subscriptions.SubscriptionTypes;
+import sharierhea.music.Jukebox;
 
 import static sharierhea.Launcher.*;
 
 public class ChannelPointRedemption extends EventListener<ChannelPointsCustomRewardRedemptionEvent> {
+    private final Jukebox JUKEBOX;
 
-    public ChannelPointRedemption() {
+    public ChannelPointRedemption(Jukebox media) throws Exception {
         super(ChannelPointsCustomRewardRedemptionEvent.class);
         twitchClient.getEventSocket().register(
                 broadcasterToken,
@@ -16,6 +18,10 @@ public class ChannelPointRedemption extends EventListener<ChannelPointsCustomRew
                         null
                 )
         );
+        if (media == null)
+            throw new Exception("Jukebox has not been initialized.");
+        else
+            JUKEBOX = media;
     }
 
     @Override
@@ -23,10 +29,10 @@ public class ChannelPointRedemption extends EventListener<ChannelPointsCustomRew
         String eventTitle = event.getReward().getTitle();
 
         if (eventTitle.equals("Start a Music Poll"))
-            jukebox.initiatePoll();
+            JUKEBOX.initiatePoll();
 
         if (eventTitle.equals("Skip Song")) {
-            if (!jukebox.skip())
+            if (!JUKEBOX.skip())
                 sendMessage("This song cannot be skipped because it was requested by a chatter! (Points will be refunded)");
         }
 
@@ -42,7 +48,7 @@ public class ChannelPointRedemption extends EventListener<ChannelPointsCustomRew
 
             String[] info = userInput.strip().split(" - ");
 
-            if (jukebox.handleRequest(info, userID, username))
+            if (JUKEBOX.handleRequest(info, userID, username))
                 sendMessage("@%s your request was successful! Stay tuned...".formatted(username));
             else
                 sendMessage("@%s your request was formatted incorrectly (invalid title or artist). Your points will be refunded.".formatted(username));

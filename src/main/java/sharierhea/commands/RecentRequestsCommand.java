@@ -16,7 +16,7 @@ public class RecentRequestsCommand extends Command {
     @Override
     protected void command(ChannelMessageEvent event) {
         try {
-            List<String> requests = Launcher.STORE.getRecentSongRequests(event.getUser().getId());
+            List<String> requests = Launcher.store.getRecentSongRequests(event.getUser().getId());
             if (requests.isEmpty())
                 sendMessage("@%s you haven't requested any songs yet!".formatted(event.getUser().getName()));
             else

@@ -16,7 +16,7 @@ public class RecentSongsCommand extends Command {
     @Override
     protected void command(ChannelMessageEvent event) {
         try {
-            List<String> songs = Launcher.STORE.getRecentSongs();
+            List<String> songs = Launcher.store.getRecentSongs();
             sendMessage("The 5 most recently played songs are: %s".formatted(String.join(", ", songs)));
         } catch (SQLException sqlException) {
             logger.error("Could not retrieve recent songs", sqlException);

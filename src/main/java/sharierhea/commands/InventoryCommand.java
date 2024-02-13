@@ -17,7 +17,7 @@ public class InventoryCommand extends Command {
      */
     public InventoryCommand() {
         super();
-        rarityMap = Launcher.STORE.getRarityMap();
+        rarityMap = Launcher.store.getRarityMap();
         trigger = "!inventory";
     }
 
@@ -50,7 +50,7 @@ public class InventoryCommand extends Command {
         Function<Map.Entry<Integer, Integer>, String> mapper = (entry) -> "%dx %s".formatted(entry.getValue(), rarityMap.get(entry.getKey()));
 
         try {
-            HashMap<Integer, Integer> map = Launcher.STORE.getInventory(event.getUser().getId());
+            HashMap<Integer, Integer> map = Launcher.store.getInventory(event.getUser().getId());
             if (map.isEmpty())
                 sendMessage("@%s seems like don't have anything in your inventory!".formatted(event.getUser().getName()));
             else {
@@ -71,7 +71,7 @@ public class InventoryCommand extends Command {
     @EventSubscriber
     private void command(ChannelMessageEvent event, String argument) {
         try {
-            ArrayList<String> names = (ArrayList<String>) Launcher.STORE.getItemNames(event.getUser().getId(), argument);
+            ArrayList<String> names = (ArrayList<String>) Launcher.store.getItemNames(event.getUser().getId(), argument);
             if (names.isEmpty())
                 sendMessage("@%s seems like you haven't found any %s items!".formatted(event.getUser().getName(), argument));
             else

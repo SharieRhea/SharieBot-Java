@@ -2,13 +2,19 @@ package sharierhea.commands;
 
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import sharierhea.Launcher;
+import sharierhea.music.Jukebox;
 
 
 public class ResumeCommand extends Command {
+    private final Jukebox JUKEBOX;
 
-    public ResumeCommand() {
+    public ResumeCommand(Jukebox media) throws Exception {
         super();
         trigger = "!resume";
+        if (media == null)
+            throw new Exception("Jukebox has not been initialized.");
+        else
+            JUKEBOX = media;
     }
 
     @Override
@@ -25,6 +31,6 @@ public class ResumeCommand extends Command {
      */
     @Override
     protected void command(ChannelMessageEvent event) {
-        Launcher.jukebox.resume();
+        JUKEBOX.resume();
     }
 }

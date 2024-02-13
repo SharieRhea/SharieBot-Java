@@ -2,16 +2,24 @@ package sharierhea.events;
 
 import com.github.twitch4j.chat.events.channel.FollowEvent;
 import sharierhea.Launcher;
+import sharierhea.SocketHandler;
 
 import java.io.FileWriter;
 import java.io.IOException;
 
-import static sharierhea.Launcher.*;
+import static sharierhea.Launcher.broadcasterToken;
+import static sharierhea.Launcher.twitchClient;
 
 public class Follow extends EventListener<FollowEvent> {
+    private final SocketHandler OBS_SOCKET;
 
-    public Follow() {
+    public Follow(SocketHandler socket) throws Exception {
         super(FollowEvent.class);
+
+        if (socket == null)
+            throw new Exception("Websocket has not been initialized.");
+        else
+            OBS_SOCKET = socket;
     }
 
     @Override

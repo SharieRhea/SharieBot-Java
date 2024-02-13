@@ -43,7 +43,7 @@ public class QuoteCommand extends Command {
      */
     public void command(ChannelMessageEvent event) {
         try {
-            Store.Quote quote = Launcher.STORE.queryRandomQuote();
+            Store.Quote quote = Launcher.store.queryRandomQuote();
             sendMessage("Quote " + quote.id() + ": \"" + quote.text() + "\" [" + quote.date() + "]");
         } catch (SQLException exception) {
             logger.error("Query failed" + exception);
@@ -58,7 +58,7 @@ public class QuoteCommand extends Command {
      */
     public void command(ChannelMessageEvent event, int quoteNumber) {
         try {
-            Store.Quote quote = Launcher.STORE.queryQuote(quoteNumber);
+            Store.Quote quote = Launcher.store.queryQuote(quoteNumber);
             if (quote.id() == null)
                 sendMessage("Quote not found!");
             else

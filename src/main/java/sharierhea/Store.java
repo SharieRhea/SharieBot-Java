@@ -19,7 +19,7 @@ public class Store {
     /**
      * Constructor for store, attempts to establish a connection to the database.
      */
-    public Store() {
+    public Store() throws Exception {
         logger = LoggerFactory.getLogger(Store.class);
         try {
             String path = "jdbc:sqlite:src/resources/identifier.sqlite";
@@ -28,6 +28,7 @@ public class Store {
         }
         catch (SQLException exception) {
             logger.error("Failed to connect to database", exception);
+            throw new Exception("Failed to connect to database.");
         }
 
         try{

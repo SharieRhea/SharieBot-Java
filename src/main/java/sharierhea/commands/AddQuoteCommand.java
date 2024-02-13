@@ -39,7 +39,7 @@ public class AddQuoteCommand extends Command {
     @Override
     protected void command(ChannelMessageEvent event) {
         try {
-            sendMessage("Added quote number %d!".formatted(Launcher.STORE.addQuote(quote)));
+            sendMessage("Added quote number %d!".formatted(Launcher.store.addQuote(quote)));
         } catch (SQLException sqlException) {
             sendMessage("Unable to add quote!");
             logger.error("Unable to add quote", sqlException);

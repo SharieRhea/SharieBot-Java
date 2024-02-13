@@ -3,6 +3,7 @@ package sharierhea.events;
 
 import com.github.twitch4j.eventsub.events.ChannelAdBreakBeginEvent;
 import com.github.twitch4j.eventsub.subscriptions.SubscriptionTypes;
+import sharierhea.SocketHandler;
 
 import java.time.Duration;
 import java.util.Timer;
@@ -11,9 +12,9 @@ import java.util.TimerTask;
 import static sharierhea.Launcher.*;
 
 public class AdBegin extends EventListener<ChannelAdBreakBeginEvent> {
+    private final SocketHandler OBS_SOCKET;
 
-
-    public AdBegin() {
+    public AdBegin(SocketHandler socket) throws Exception {
         super(ChannelAdBreakBeginEvent.class);
         // Manually register for the event since it requires a broadcaster token with appropriate scopes
         twitchClient.getEventSocket().register(
@@ -23,6 +24,10 @@ public class AdBegin extends EventListener<ChannelAdBreakBeginEvent> {
                         null
                 )
         );
+        if (socket == null)
+            throw new Exception("Websocket has not been initialized.");
+        else
+            OBS_SOCKET = socket;
     }
 
     @Override

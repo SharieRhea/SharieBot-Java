@@ -2,14 +2,20 @@ package sharierhea.commands;
 
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import sharierhea.Launcher;
+import sharierhea.music.Jukebox;
 
 
 public class SkipCommand extends Command {
     private static final double VIEWER_PERCENTAGE = 0.25;
+    private final Jukebox JUKEBOX;
 
-    public SkipCommand() {
+    public SkipCommand(Jukebox media) throws Exception {
         super();
         trigger = "!skip";
+        if (media == null)
+            throw new Exception("Jukebox has not been initialized.");
+        else
+            JUKEBOX = media;
     }
 
     /**
@@ -51,7 +57,7 @@ public class SkipCommand extends Command {
      */
     @Override
     protected void command(ChannelMessageEvent event) {
-        if (!Launcher.jukebox.skip())
+        if (!JUKEBOX.skip())
             sendMessage("This song cannot be skipped because it was requested by a chatter!");
     }
 }

@@ -2,12 +2,18 @@ package sharierhea.commands;
 
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import sharierhea.Launcher;
+import sharierhea.music.Jukebox;
 
 public class RefreshSongsCommand extends Command {
+    private final Jukebox JUKEBOX;
 
-    public RefreshSongsCommand() {
+    public RefreshSongsCommand(Jukebox media) throws Exception {
         super();
         trigger = "!refreshSongs";
+        if (media == null)
+            throw new Exception("Jukebox has not been initialized.");
+        else
+            JUKEBOX = media;
     }
 
     /**
@@ -29,6 +35,6 @@ public class RefreshSongsCommand extends Command {
      */
     @Override
     protected void command(ChannelMessageEvent event) {
-        Launcher.jukebox.initializeSongList();
+        JUKEBOX.initializeSongList();
     }
 }

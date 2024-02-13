@@ -6,15 +6,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommandsCommand extends Command {
-    private final List<Command> activeCommands;
+    private final String listOfTriggers;
 
     /**
      * Constructor to initialize the command, sets up onEvent behavior.
      */
     public CommandsCommand(List<Command> commands) {
         super();
-        activeCommands = commands;
         trigger = "!commands";
+        listOfTriggers = commands.stream().map(command -> command.trigger).collect(Collectors.joining(", "));
     }
 
     /**
@@ -24,7 +24,6 @@ public class CommandsCommand extends Command {
      */
     @Override
     protected void command(ChannelMessageEvent event) {
-        String message = activeCommands.stream().map(command -> command.trigger).collect(Collectors.joining(", "));
-        sendMessage("Here is a list of all the current commands: %s".formatted(message));
+        sendMessage("Here is a list of all the current commands: %s".formatted(listOfTriggers));
     }
 }

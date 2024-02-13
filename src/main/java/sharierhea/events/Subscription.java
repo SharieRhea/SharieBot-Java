@@ -2,6 +2,7 @@ package sharierhea.events;
 
 import com.github.twitch4j.eventsub.events.ChannelSubscribeEvent;
 import com.github.twitch4j.eventsub.subscriptions.SubscriptionTypes;
+import sharierhea.SocketHandler;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,8 +10,9 @@ import java.io.IOException;
 import static sharierhea.Launcher.*;
 
 public class Subscription extends EventListener<ChannelSubscribeEvent> {
+    private final SocketHandler OBS_SOCKET;
 
-    public Subscription() {
+    public Subscription(SocketHandler socket) throws Exception {
         super(ChannelSubscribeEvent.class);
         twitchClient.getEventSocket().register(
                 broadcasterToken,
@@ -19,6 +21,10 @@ public class Subscription extends EventListener<ChannelSubscribeEvent> {
                         null
                 )
         );
+        if (socket == null)
+            throw new Exception("Websocket has not been initialized.");
+        else
+            OBS_SOCKET = socket;
     }
 
     @Override

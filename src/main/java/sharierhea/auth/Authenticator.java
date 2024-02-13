@@ -61,7 +61,6 @@ public class Authenticator {
                     "&redirect_uri=http://localhost:3000&scope=" +
                     // Append the user's desired scope(s)
                     reader.readLine();
-
             authURI =  URI.create(builder);
         } catch (IOException exception) {
             throw new RuntimeException(exception);
