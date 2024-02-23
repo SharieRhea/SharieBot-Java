@@ -21,10 +21,8 @@ public class SocketHandler {
         if (!ENABLE_OBS_WEBSOCKET)
             return;
 
-        String ip;
         String pass;
         try (BufferedReader reader = new BufferedReader(new FileReader("src/main/java/sharierhea/auth/socketInfo.txt"))) {
-            ip = reader.readLine();
             pass = reader.readLine();
         } catch (IOException exception) {
             logger.error("Unable to read credentials for OBS websocket", exception);
@@ -33,7 +31,7 @@ public class SocketHandler {
 
         obsRemoteController = OBSRemoteController.builder()
             .autoConnect(true)
-            .host(ip)
+            .host("127.0.0.1")
             .port(4455)
             .password(pass)
             .build();

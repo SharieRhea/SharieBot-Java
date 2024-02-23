@@ -1,11 +1,10 @@
 package sharierhea.commands;
 
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
-import sharierhea.Launcher;
 import sharierhea.music.Jukebox;
 
 
-public class PauseCommand extends Command {
+public class PauseCommand extends BroadcasterOnlyCommand {
     private final Jukebox JUKEBOX;
 
     public PauseCommand(Jukebox media) throws Exception {
@@ -16,13 +15,6 @@ public class PauseCommand extends Command {
             throw new Exception("Jukebox has not been initialized.");
         else
             JUKEBOX = media;
-    }
-
-    @Override
-    protected void parseCommand(ChannelMessageEvent event) {
-        if (event.getUser().getId().equals(Launcher.CHANNEL_ID) && event.getMessage().startsWith(trigger)) {
-            command(event);
-        }
     }
 
     /**

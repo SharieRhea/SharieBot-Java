@@ -83,7 +83,7 @@ public class Launcher extends Application {
         activeCommands.add(new TextCommand("!discord", "/me Join the Sleepy Sanctum Discord here: https://discord.com/invite/T87Qst3W64", false));
         activeCommands.add(new TextCommand("!youtube", "/me Check out Sharie's Youtube VOD channel here: https://www.youtube.com/@shariemakesart", false));
         activeCommands.add(new TextCommand("!github", "/me Check out Sharie's GitHub profile here: https://github.com/SharieRhea", false));
-        activeCommands.add(new TextCommand("!socials", "/me Check out all of Sharie's socials here: https://linktr.ee/shariemakesart\"", false));
+        activeCommands.add(new TextCommand("!socials", "/me Check out all of Sharie's socials here: https://linktr.ee/shariemakesart", false));
         activeCommands.add(new TextCommand("!school", "Sharie is a second-year (sophomore) Computer Science student at a public university.", true));
         activeCommands.add(new TextCommand("!raid", "Our raid message is \"Sharie needs to figure out a better raid message!\"", false));
         activeCommands.add(new TextCommand("!lurk", "is lurking! Thanks for tuning in and good luck on your project (if you're working on one)!", true));

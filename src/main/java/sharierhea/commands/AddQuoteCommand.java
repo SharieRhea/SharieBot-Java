@@ -5,7 +5,7 @@ import sharierhea.Launcher;
 
 import java.sql.SQLException;
 
-public class AddQuoteCommand extends Command {
+public class AddQuoteCommand extends BroadcasterOnlyCommand {
     private String quote;
 
     /**
@@ -23,7 +23,7 @@ public class AddQuoteCommand extends Command {
      */
     @Override
     protected void parseCommand(ChannelMessageEvent event) {
-        if (event.getUser().getId().equals(Launcher.CHANNEL_NAME) && event.getMessage().startsWith(trigger)) {
+        if (event.getUser().getId().equals(Launcher.CHANNEL_ID) && event.getMessage().startsWith(trigger)) {
             // Split on " to get entire quote as one String
             String[] words = event.getMessage().split("\"");
             quote = words[1];

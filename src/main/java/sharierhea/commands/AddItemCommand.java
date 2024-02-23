@@ -5,7 +5,9 @@ import sharierhea.Launcher;
 
 import java.sql.SQLException;
 
-public class AddItemCommand extends Command {
+import static sharierhea.Launcher.CHANNEL_ID;
+
+public class AddItemCommand extends BroadcasterOnlyCommand {
     private String itemName;
     private String rarity;
 
@@ -20,7 +22,7 @@ public class AddItemCommand extends Command {
 
     @Override
     protected void parseCommand(ChannelMessageEvent event) {
-        if (event.getUser().getId().equals("170582504") && event.getMessage().startsWith(trigger)) {
+        if (event.getUser().getId().equals(CHANNEL_ID) && event.getMessage().startsWith(trigger)) {
             String[] words = event.getMessage().split(" ");
 
             if (words.length != 3) {

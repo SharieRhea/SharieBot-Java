@@ -1,0 +1,15 @@
+enable websocket
+    ip? (localhost)
+    port (default 4455)
+    password
+enable jukebox
+    path to the song directory
+channel name
+channel id
+bot id
+bot auth token
+    clientid
+    scopes
+broadcaster auth token
+    clientid
+    scopes
