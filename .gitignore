@@ -48,3 +48,4 @@ bin/
 accessToken.txt
 uriInfo.txt
 socketInfo.txt
+config.txt

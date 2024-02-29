@@ -20,13 +20,10 @@ public class Authenticator {
     /**
      * Constructor for Authenticator. Tries to build an OAuth credential using the user's access token,
      * throws if no accessToken.txt file is found or if there is an IOException.
-     * @throws IOException Some IO error.
      */
-    public Authenticator() throws IOException {
-        try (BufferedReader reader = new BufferedReader(new FileReader("src/main/java/sharierhea/auth/accessToken.txt"))) {
-            credential = new OAuth2Credential("twitch", reader.readLine());
-            broadcasterCredential = new OAuth2Credential("twitch", reader.readLine());
-        }
+    public Authenticator(String broadcasterToken, String botToken) {
+        broadcasterCredential = new OAuth2Credential("twitch",broadcasterToken);
+        credential = new OAuth2Credential("twitch", botToken);
     }
 
     /**

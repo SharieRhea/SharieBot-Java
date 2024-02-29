@@ -1,3 +1,0 @@
-Paste your access token here!
-
-When you are done, delete these extra lines and rename the file to "accessToken.txt".

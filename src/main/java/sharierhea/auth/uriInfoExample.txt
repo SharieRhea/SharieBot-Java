@@ -1,4 +1,0 @@
-Paste your clientID here!
-Paste your desired scopes (URL encoded) here!
-
-When you are done, delete these extra lines and rename the file to "uriInfo.txt".

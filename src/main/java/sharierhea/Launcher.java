@@ -13,10 +13,10 @@ import sharierhea.commands.*;
 import sharierhea.events.*;
 import sharierhea.music.Jukebox;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * The "main" class for SharieBot. This class launches the bot, authenticates with Twitch, and joins the chat.
@@ -24,19 +24,23 @@ import java.util.List;
  * --module-path /home/sharie/Downloads/app/openjfx-21.0.1_linux-x64_bin-sdk/javafx-sdk-21.0.1/lib --add-modules=javafx.controls --add-modules=javafx.media
  */
 public class Launcher extends Application {
-    public final static boolean ENABLE_OBS_WEBSOCKET = true;
-    public final static boolean ENABLE_JUKEBOX = true;
-    public final static String CHANNEL_NAME = "shariemakesart";
-    public final static String CHANNEL_ID = "170582504";
-    public final static String BOT_ID = "957074857";
+    public static boolean ENABLE_OBS_WEBSOCKET = true;
+    public static boolean ENABLE_JUKEBOX = true;
+    public static String CHANNEL_NAME = null;
+    public static String CHANNEL_ID = null;
+    public static String BOT_ID = null;
     private final static Logger logger = LoggerFactory.getLogger(Launcher.class);
     public static Store store = null;
     public static OAuth2Credential botToken = null;
+    private String botAuthString = null;
     public static OAuth2Credential broadcasterToken = null;
+    private String broadcasterAuthString = null;
     public static TwitchClient twitchClient = null;
     public static SimpleEventHandler eventHandler = null;
     private static SocketHandler obsSocket = null;
+    private String socketPassword = null;
     private static Jukebox jukebox = null;
+    private String musicDirectoryPath = null;
 
     public static void main(String[] args) {
         launch(args);
@@ -44,8 +48,20 @@ public class Launcher extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        // Look for config.txt, if it doesn't exist, prompt user to create one, then parse for setup
+        BufferedReader reader;
+        try {
+            reader = new BufferedReader(new FileReader("src/resources/config.txt"));
+            parseConfig(reader);
+        }
+        catch (FileNotFoundException fileNotFoundException) {
+            createConfigFile();
+            reader = new BufferedReader(new FileReader("src/resources/config.txt"));
+            parseConfig(reader);
+        }
+
         // Initialize an authenticator to receive credentials.
-        Authenticator authenticator = new Authenticator();
+        Authenticator authenticator = new Authenticator(broadcasterAuthString, botAuthString);
         botToken = authenticator.getCredential();
         broadcasterToken = authenticator.getBroadcasterCredential();
 
@@ -64,11 +80,11 @@ public class Launcher extends Application {
 
         store = new Store();
         if (ENABLE_OBS_WEBSOCKET) {
-            obsSocket = new SocketHandler();
+            obsSocket = new SocketHandler(socketPassword);
             updateTotalFollowersAndSubs();
         }
         if (ENABLE_JUKEBOX)
-            jukebox = new Jukebox(twitchClient, store, broadcasterToken);
+            jukebox = new Jukebox(twitchClient, store, broadcasterToken, musicDirectoryPath);
         twitchClient.getChat().joinChannel(CHANNEL_NAME);
         eventHandler = twitchClient.getEventManager().getEventHandler(SimpleEventHandler.class);
 
@@ -136,6 +152,62 @@ public class Launcher extends Application {
             writer.flush();
         } catch (IOException ioException) {
             logger.error("Unable to write totalFollowers to file.");
+        }
+    }
+
+    private void createConfigFile() throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        FileWriter writer = new FileWriter("src/resources/config.txt", false);
+        System.out.println("What is your Twitch username?");
+        writer.write(scanner.next() + "\n");
+        System.out.println("What is your Twitch user ID?");
+        writer.write(scanner.next() + "\n");
+        System.out.println("What is your *bot's* userID?");
+        writer.write(scanner.next() + "\n");
+        System.out.println("What is the access token for your account?");
+        writer.write(scanner.next() + "\n");
+        System.out.println("What is the access token for your *bot's* account?");
+        writer.write(scanner.next() + "\n");
+        System.out.println("Would you like to enable OBS websocket integration? (yes/no)");
+        if (scanner.next().equalsIgnoreCase("yes")) {
+            writer.write("yes\n");
+            System.out.println("What is your OBS websocket password?");
+            writer.write(scanner.next() + "\n");
+        }
+        else {
+            writer.write("no\n");
+            writer.write("\n");
+        }
+        System.out.println("Would you like to enable the jukebox for music integration? (yes/no)");
+        if (scanner.next().equalsIgnoreCase("yes")) {
+            writer.write("yes\n");
+            System.out.println("What is the path to the *directory* where your mp3 files are stored?");
+            writer.write(scanner.next() + "\n");
+        }
+        else {
+            writer.write("no\n");
+            writer.write("\n");
+        }
+        System.out.println("Thank you! If you ever need to change these settings, delete the generated config.txt to go through these prompts again.");
+        System.out.println("Enter anything to continue.");
+        scanner.next();
+
+        scanner.close();
+        writer.close();
+    }
+
+    private void parseConfig(BufferedReader reader) throws IOException {
+        CHANNEL_NAME = reader.readLine();
+        CHANNEL_ID = reader.readLine();
+        BOT_ID = reader.readLine();
+        broadcasterAuthString = reader.readLine();
+        botAuthString = reader.readLine();
+        if (reader.readLine().equals("yes"))
+            ENABLE_OBS_WEBSOCKET = true;
+        socketPassword = reader.readLine();
+        if (reader.readLine().equals("yes")) {
+            ENABLE_JUKEBOX = true;
+            musicDirectoryPath = reader.readLine();
         }
     }
 }

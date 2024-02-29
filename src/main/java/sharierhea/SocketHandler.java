@@ -4,36 +4,21 @@ import io.obswebsocket.community.client.OBSRemoteController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+
 import java.time.Duration;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import static sharierhea.Launcher.ENABLE_OBS_WEBSOCKET;
 
 public class SocketHandler {
     OBSRemoteController obsRemoteController;
     private final Logger logger = LoggerFactory.getLogger(Store.class);
 
-    public SocketHandler() throws IOException {
-        if (!ENABLE_OBS_WEBSOCKET)
-            return;
-
-        String pass;
-        try (BufferedReader reader = new BufferedReader(new FileReader("src/main/java/sharierhea/auth/socketInfo.txt"))) {
-            pass = reader.readLine();
-        } catch (IOException exception) {
-            logger.error("Unable to read credentials for OBS websocket", exception);
-            throw new IOException(exception);
-        }
-
+    public SocketHandler(String password) {
         obsRemoteController = OBSRemoteController.builder()
             .autoConnect(true)
             .host("127.0.0.1")
             .port(4455)
-            .password(pass)
+            .password(password)
             .build();
 
         obsRemoteController.connect();

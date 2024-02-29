@@ -30,8 +30,7 @@ public class Jukebox {
     private final TwitchClient twitchClient;
     private final OAuth2Credential credential;
 
-    private final static String DIRECTORY_PATH = "/home/sharie/Music/Stream Music";
-    private final static String CHANNEL_NAME = "shariemakesart";
+    private String directoryPath;
     private final HashMap<String, Path> filepaths;
     private final MP3agic mp3agic = new MP3agic();
     private final Store store;
@@ -65,14 +64,15 @@ public class Jukebox {
         return skipUsers.size();
     }
 
-    public Jukebox(TwitchClient twitchClient, Store database, OAuth2Credential credential){
+    public Jukebox(TwitchClient twitchClient, Store database, OAuth2Credential credential, String directoryPath) throws IOException{
         this.twitchClient = twitchClient;
         this.credential = credential;
+        this.directoryPath = directoryPath;
         store = database;
         filepaths = new HashMap<>();
-
         songQueue = new ArrayDeque<>();
         songDump = new ArrayDeque<>();
+
         initializeSongList();
     }
 
@@ -87,10 +87,10 @@ public class Jukebox {
         if (mediaPlayer != null)
             mediaPlayer.dispose();
 
-        File directory = new File(DIRECTORY_PATH);
+        File directory = new File(directoryPath);
         File[] files = directory.listFiles();
         if (files == null) {
-            logger.error("Invalid path to song directory: " + DIRECTORY_PATH);
+            logger.error("Invalid path to song directory: " + directoryPath);
             return;
         }
         for (File file : files) {
